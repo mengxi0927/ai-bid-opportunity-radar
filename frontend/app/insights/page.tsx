@@ -1,9 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { getMarketInsights, MarketInsights } from "@/lib/api";
 import { Shell } from "@/components/Shell";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const ranges = ["今日", "近7天", "本月", "近30天"];
 const industries = ["全部", "政企", "金融", "教育", "医疗", "能源", "制造"];
@@ -14,8 +16,6 @@ export default function InsightsPage() {
   const [industry, setIndustry] = useState("全部");
   const [region, setRegion] = useState("全部");
   const [data, setData] = useState<MarketInsights | null>(null);
-  const [activeKeyword, setActiveKeyword] = useState<MarketInsights["keywords"][number] | null>(null);
-  const [activeSummary, setActiveSummary] = useState<SummaryCard | null>(null);
   const [error, setError] = useState("");
 
   const search = useMemo(() => {
@@ -26,422 +26,212 @@ export default function InsightsPage() {
   useEffect(() => {
     setError("");
     getMarketInsights(search)
-      .then((result) => {
-        setData(result);
-        setActiveKeyword(result.keywords[0] || null);
-      })
+      .then((result) => setData(result))
       .catch(() => {
         setData(null);
-        setActiveKeyword(null);
         setError("无法加载市场洞察，请确认 Flask 后端已启动，且已导入真实标讯数据。");
       });
   }, [search]);
 
-  const filterSummary = useMemo(() => `${range} · ${industry}行业 · ${region}区域`, [range, industry, region]);
-
   return (
     <Shell>
-      <div className="page-head">
+      <section className="page-header">
         <div>
-          <h1>市场洞察</h1>
-          <p className="subtle">基于公开招投标信息识别客户需求、行业趋势与能力缺口</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Market Insights</p>
+          <h1 className="page-title">市场洞察</h1>
+          <p className="page-description">把招投标公告当作外部市场信号源，观察行业、区域、客户和能力要求的变化，而不是只把它当作线索列表。</p>
         </div>
-        <div className="insight-filters">
-          <Select label="时间范围" value={range} options={ranges} onChange={setRange} />
-          <Select label="行业" value={industry} options={industries} onChange={setIndustry} />
-          <Select label="区域" value={region} options={regions} onChange={setRegion} />
+        <div className="grid gap-3 sm:grid-cols-3">
+          <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={range} onChange={(event) => setRange(event.target.value)}>
+            {ranges.map((option) => <option key={option}>{option}</option>)}
+          </select>
+          <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={industry} onChange={(event) => setIndustry(event.target.value)}>
+            {industries.map((option) => <option key={option}>{option}</option>)}
+          </select>
+          <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={region} onChange={(event) => setRegion(event.target.value)}>
+            {regions.map((option) => <option key={option}>{option}</option>)}
+          </select>
         </div>
-      </div>
-
-      <section className="signal-banner">
-        <strong>公开标讯不只是投标线索</strong>
-        <span>
-          它也是客户需求、市场变化、能力缺口和竞争动作的外部信号。当前筛选：{filterSummary}
-          {data && `，真实标讯池 ${data.data_source.total_imported} 条，本次命中 ${data.data_source.filtered_total} 条。`}
-        </span>
       </section>
 
-      {error && <div className="empty">{error}</div>}
+      {error && (
+        <Card className="border-rose-200 bg-rose-50/70">
+          <CardContent className="p-4 text-sm text-rose-800">{error}</CardContent>
+        </Card>
+      )}
 
       {data && (
         <>
-          <section className="panel executive-insights">
-            <div className="section-title">
-              <h2>AI 洞察总结</h2>
-              <span>先看结论，点击查看依据</span>
-            </div>
-            <div className="ai-insight-grid compact">
-              {buildSummaryCards(data).map((card) => (
-                <button className={`summary-card ${card.tone}`} key={card.title} onClick={() => setActiveSummary(card)} type="button">
-                  <small>{card.title}</small>
-                  <strong>{card.conclusion}</strong>
-                  <span>查看依据</span>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section className="insight-metrics-grid">
+          <section className="metric-grid">
             {data.metrics.map((item) => (
-              <div className="metric insight-metric" key={item.label}>
-                <small>{item.label}</small>
-                <div><strong>{formatNumber(item.value)}</strong><em className={item.change.startsWith("-") ? "down" : "up"}>{item.change}</em></div>
-                <span>{item.note}</span>
-              </div>
+              <Card key={item.label}>
+                <CardHeader className="pb-3">
+                  <CardDescription>{item.label}</CardDescription>
+                  <CardTitle className="font-mono text-3xl">{item.value}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between pt-0 text-sm">
+                  <span className="text-muted-foreground">{item.note}</span>
+                  <Badge variant={item.change.startsWith("-") ? "warning" : "success"}>{item.change}</Badge>
+                </CardContent>
+              </Card>
             ))}
           </section>
 
-          <section className="insights-grid">
-            <Panel title="行业趋势分析" note="行业 TOP5">
-              <IndustryTrendChart rows={data.industry_trends} />
-            </Panel>
+          <section className="dashboard-grid">
+            <Card>
+              <CardHeader>
+                <CardTitle>AI 总结</CardTitle>
+                <CardDescription>销售、管理和能力团队分别应该关注什么</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <SummaryBlock title="销售团队" items={data.summary.sales} />
+                <SummaryBlock title="管理层" items={data.summary.management} />
+                <SummaryBlock title="能力建设" items={data.summary.capability} />
+              </CardContent>
+            </Card>
 
-            <Panel title="技术关键词热度" note="点击关键词查看相关标讯数量">
-              <KeywordHeatPanel keywords={data.keywords} activeKeyword={activeKeyword} onSelect={setActiveKeyword} />
-            </Panel>
-
-            <Panel title="区域市场活跃度" note="近期公开采购热度">
-              <RegionRadar rows={data.regions} />
-            </Panel>
-
-            <Panel title="高频资质与能力要求" note="市场要求与公司覆盖情况">
-              <div className="table-wrap compact-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>要求名称</th>
-                      <th>出现次数</th>
-                      <th>当前匹配状态</th>
-                      <th>关联法人体</th>
-                      <th>建议动作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.capabilities.map((row) => (
-                      <tr key={row.name}>
-                        <td><strong>{row.name}</strong></td>
-                        <td>{row.count}次</td>
-                        <td><StatusBadge status={row.status} /></td>
-                        <td>{row.entity}</td>
-                        <td>{row.action}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Panel>
-
-            <Panel title="竞争信号" note="中标、成交和结果公告中的外部动作">
-              <DataTable
-                emptyText="当前筛选条件下暂无中标或成交类竞争信号。"
-                headers={["竞争企业", "近期中标数量", "主要行业", "能力方向", "是否涉及已有客户", "建议动作"]}
-                rows={data.competitors.map((row) => [
-                  row.company,
-                  `${row.wins}次`,
-                  row.industry,
-                  row.capability,
-                  row.existing_customer,
-                  row.action
-                ])}
-              />
-            </Panel>
+            <Card>
+              <CardHeader>
+                <CardTitle>数据源概况</CardTitle>
+                <CardDescription>当前筛选窗口下的真实数据范围</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <StatRow label="总导入标讯" value={`${data.data_source.total_imported} 条`} />
+                <StatRow label="本次命中数量" value={`${data.data_source.filtered_total} 条`} />
+                <StatRow label="最新公告日期" value={data.data_source.latest_date} />
+                <div className="rounded-xl border border-border/70 bg-muted/20 p-4 text-muted-foreground">
+                  当前筛选：{data.filters.range} · {data.filters.industry}行业 · {data.filters.region}区域
+                </div>
+              </CardContent>
+            </Card>
           </section>
 
-          {activeSummary && <SummaryModal card={activeSummary} onClose={() => setActiveSummary(null)} />}
+          <section className="dashboard-grid">
+            <InsightTable
+              title="行业趋势"
+              description="近期哪些方向更值得持续盯住"
+              headers={["行业", "公告数", "变化", "关键词", "建议"]}
+              rows={data.industry_trends.map((row) => [row.industry, `${row.notice_count}`, row.change, row.keywords, row.suggestion])}
+            />
+            <InsightTable
+              title="区域活跃度"
+              description="市场热度和相关机会分布"
+              headers={["区域", "公告数", "相关商机", "重点方向", "活跃客户", "建议"]}
+              rows={data.regions.map((row) => [row.region, `${row.notice_count}`, `${row.related_count}`, row.directions, `${row.active_customers}`, row.suggestion])}
+            />
+            <InsightTable
+              title="客户动态"
+              description="值得销售补充关系背景的客户线索"
+              headers={["客户", "类型", "公告数", "方向", "最近公告", "建议动作"]}
+              rows={data.customer_dynamics.map((row) => [row.customer_name, row.customer_type, `${row.notice_count}`, row.directions, row.latest_published_at, row.suggested_action])}
+            />
+            <InsightTable
+              title="能力要求"
+              description="市场需求与公司资质覆盖情况"
+              headers={["要求名称", "出现次数", "状态", "法人体", "建议动作"]}
+              rows={data.capabilities.map((row) => [row.name, `${row.count}`, row.status, row.entity, row.action])}
+            />
+          </section>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>技术关键词与竞争信号</CardTitle>
+              <CardDescription>用热词和结果公告观察市场方向与外部竞争动作</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
+              <div className="flex flex-wrap gap-2">
+                {data.keywords.map((item) => (
+                  <div className="rounded-full border border-border bg-muted/30 px-3 py-2 text-sm" key={item.label}>
+                    <span className="font-medium">{item.label}</span>
+                    <span className="ml-2 text-muted-foreground">{item.count}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">{item.change}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead>竞争企业</TableHead>
+                    <TableHead>中标次数</TableHead>
+                    <TableHead>主要行业</TableHead>
+                    <TableHead>能力方向</TableHead>
+                    <TableHead>已有客户</TableHead>
+                    <TableHead>建议动作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.competitors.length ? data.competitors.map((row) => (
+                    <TableRow key={row.company}>
+                      <TableCell className="font-medium">{row.company}</TableCell>
+                      <TableCell>{row.wins}</TableCell>
+                      <TableCell>{row.industry}</TableCell>
+                      <TableCell>{row.capability}</TableCell>
+                      <TableCell>{row.existing_customer}</TableCell>
+                      <TableCell>{row.action}</TableCell>
+                    </TableRow>
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground">当前筛选条件下暂无竞争信号。</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </>
       )}
     </Shell>
   );
 }
 
-function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
+function SummaryBlock({ title, items }: { title: string; items: string[] }) {
   return (
-    <label>
-      <span>{label}</span>
-      <select className="select" value={value} onChange={(event) => onChange(event.target.value)}>
-        {options.map((option) => <option key={option}>{option}</option>)}
-      </select>
-    </label>
-  );
-}
-
-function Panel({ title, note, children, className = "" }: { title: string; note: string; children: ReactNode; className?: string }) {
-  return (
-    <section className={`panel ${className}`}>
-      <div className="section-title">
-        <h2>{title}</h2>
-        <span>{note}</span>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function DataTable({ headers, rows, emptyText, className = "" }: { headers: string[]; rows: string[][]; emptyText: string; className?: string }) {
-  if (!rows.length) {
-    return <div className="empty">{emptyText}</div>;
-  }
-  return (
-    <div className={`table-wrap compact-table ${className}`}>
-      <table>
-        <thead>
-          <tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.join("-")}>{row.map((cell, index) => <td key={`${cell}-${index}`}>{index === 0 ? <strong>{cell}</strong> : cell}</td>)}</tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const tone = status === "已覆盖" ? "good" : status === "部分覆盖" ? "warn" : "bad";
-  return <span className={`coverage-badge ${tone}`}>{status}</span>;
-}
-
-function IndustryTrendChart({ rows }: { rows: MarketInsights["industry_trends"] }) {
-  if (!rows.length) {
-    return <div className="empty">当前筛选条件下暂无行业趋势。</div>;
-  }
-
-  const max = Math.max(1, ...rows.map((row) => row.notice_count));
-
-  return (
-    <div className="industry-chart">
-      {rows.map((row, index) => {
-        const isDown = row.change.startsWith("-");
-        return (
-          <div className={`industry-chart-row tone-${index}`} key={row.industry}>
-            <div className="industry-rank">{index + 1}</div>
-            <div className="industry-main">
-              <div className="industry-head">
-                <strong>{row.industry}</strong>
-                <span className={isDown ? "down" : "up"}>{row.change}</span>
-              </div>
-              <div className="industry-bar-track">
-                <i style={{ width: `${Math.max(8, (row.notice_count / max) * 100)}%` }} />
-              </div>
-              <div className="industry-meta">
-                <span>{row.keywords}</span>
-                <em>{row.suggestion}</em>
-              </div>
-            </div>
-            <div className="industry-count">
-              <strong>{row.notice_count}</strong>
-              <span>条</span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function RegionRadar({ rows }: { rows: MarketInsights["regions"] }) {
-  if (!rows.length) {
-    return <div className="empty">当前筛选条件下暂无区域活跃度。</div>;
-  }
-
-  const size = 260;
-  const center = size / 2;
-  const radius = 88;
-  const max = Math.max(1, ...rows.map((row) => row.notice_count));
-  const points = rows.map((row, index) => {
-    const angle = (Math.PI * 2 * index) / rows.length - Math.PI / 2;
-    const valueRadius = radius * (row.notice_count / max);
-    return {
-      ...row,
-      axisX: center + Math.cos(angle) * radius,
-      axisY: center + Math.sin(angle) * radius,
-      valueX: center + Math.cos(angle) * valueRadius,
-      valueY: center + Math.sin(angle) * valueRadius,
-      labelX: center + Math.cos(angle) * (radius + 28),
-      labelY: center + Math.sin(angle) * (radius + 28)
-    };
-  });
-  const polygon = points.map((point) => `${point.valueX},${point.valueY}`).join(" ");
-
-  return (
-    <div className="region-radar-layout">
-      <svg className="region-radar" viewBox={`0 0 ${size} ${size}`} role="img" aria-label="区域市场活跃度雷达图">
-        {[0.25, 0.5, 0.75, 1].map((scale) => {
-          const grid = rows.map((_, index) => {
-            const angle = (Math.PI * 2 * index) / rows.length - Math.PI / 2;
-            return `${center + Math.cos(angle) * radius * scale},${center + Math.sin(angle) * radius * scale}`;
-          }).join(" ");
-          return <polygon className="radar-grid" points={grid} key={scale} />;
-        })}
-        {points.map((point) => (
-          <line className="radar-axis" x1={center} y1={center} x2={point.axisX} y2={point.axisY} key={`${point.region}-axis`} />
-        ))}
-        <polygon className="radar-area" points={polygon} />
-        {points.map((point) => (
-          <g key={point.region}>
-            <circle className="radar-dot" cx={point.valueX} cy={point.valueY} r="4" />
-            <text className="radar-label" x={point.labelX} y={point.labelY} textAnchor="middle" dominantBaseline="middle">{point.region}</text>
-          </g>
-        ))}
-      </svg>
-      <div className="region-radar-list">
-        {rows.map((row) => (
-          <div className="region-radar-row" key={row.region}>
-            <strong>{row.region}</strong>
-            <span>{row.notice_count} 条标讯</span>
-            <span>{row.related_count} 条相关</span>
-            <em>{row.directions}</em>
-          </div>
-        ))}
+    <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
+      <p className="font-medium text-slate-950">{title}</p>
+      <div className="mt-3 space-y-2">
+        {items.map((item) => <div className="text-sm leading-7 text-muted-foreground" key={item}>{item}</div>)}
       </div>
     </div>
   );
 }
 
-function KeywordHeatPanel({
-  keywords,
-  activeKeyword,
-  onSelect
-}: {
-  keywords: MarketInsights["keywords"];
-  activeKeyword: MarketInsights["keywords"][number] | null;
-  onSelect: (keyword: MarketInsights["keywords"][number]) => void;
-}) {
-  if (!keywords.length) {
-    return <div className="empty">当前筛选条件下暂无关键词热度。</div>;
-  }
-
-  const max = Math.max(1, ...keywords.map((item) => item.count));
-  const topKeywords = keywords.slice(0, 6);
-  const selected = activeKeyword || keywords[0];
-
+function StatRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="keyword-visual">
-      <div className="keyword-bubbles" aria-label="技术关键词热度气泡图">
-        {keywords.map((item, index) => {
-          const size = 74 + (item.count / max) * 58;
-          return (
-            <button
-              className={`keyword-bubble tone-${index % 5} ${selected.label === item.label ? "active" : ""}`}
-              key={item.label}
-              onClick={() => onSelect(item)}
-              style={{ width: size, height: size }}
-              type="button"
-            >
-              <strong>{item.label}</strong>
-              <span>{item.count}次</span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="keyword-rank">
-        {topKeywords.map((item, index) => (
-          <button
-            className={selected.label === item.label ? "active" : ""}
-            key={item.label}
-            onClick={() => onSelect(item)}
-            type="button"
-          >
-            <span>{index + 1}</span>
-            <strong>{item.label}</strong>
-            <div className="keyword-bar"><i style={{ width: `${Math.max(8, (item.count / max) * 100)}%` }} /></div>
-            <em>{item.count}次</em>
-          </button>
-        ))}
-      </div>
-      <div className="keyword-detail keyword-visual-detail">
-        <strong>{selected.label}</strong>
-        <span>相关标讯数量：{selected.count} 条，热度变化 {selected.change}</span>
-      </div>
+    <div className="flex items-center justify-between rounded-xl border border-border/70 bg-muted/20 p-4">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-slate-950">{value}</span>
     </div>
   );
 }
 
-type SummaryCard = {
-  title: string;
-  conclusion: string;
-  tone: "sales" | "trend" | "capability";
-  details: string[];
-  evidence: string[];
-};
-
-function buildSummaryCards(data: MarketInsights): SummaryCard[] {
-  const topCustomer = data.customer_dynamics[0];
-  const topIndustry = data.industry_trends[0];
-  const topRegion = [...data.regions].sort((a, b) => b.notice_count - a.notice_count)[0];
-  const topGap = data.capabilities.find((item) => item.status !== "已覆盖") || data.capabilities[0];
-  const topKeyword = data.keywords[0];
-
-  return [
-    {
-      title: "销售动作",
-      conclusion: topCustomer ? `优先跟进 ${topCustomer.customer_name}` : "暂无明确客户跟进对象",
-      tone: "sales",
-      details: data.summary.sales,
-      evidence: topCustomer ? [
-        `近期标讯：${topCustomer.notice_count} 条`,
-        `需求方向：${topCustomer.directions}`,
-        `最近发布：${topCustomer.latest_published_at}`,
-        `建议动作：${topCustomer.suggested_action}`
-      ] : ["当前筛选条件下未识别到连续客户动态。"]
-    },
-    {
-      title: "市场趋势",
-      conclusion: topIndustry ? `${topIndustry.industry}需求最活跃` : "暂无明显行业集中",
-      tone: "trend",
-      details: data.summary.management,
-      evidence: [
-        topIndustry ? `${topIndustry.industry}标讯 ${topIndustry.notice_count} 条，环比 ${topIndustry.change}` : "暂无行业数据",
-        topKeyword ? `最高频关键词：${topKeyword.label} ${topKeyword.count} 次` : "暂无关键词数据",
-        topRegion ? `最活跃区域：${topRegion.region} ${topRegion.notice_count} 条` : "暂无区域数据"
-      ]
-    },
-    {
-      title: "能力缺口",
-      conclusion: topGap ? `补齐 ${topGap.name}` : "能力覆盖整体稳定",
-      tone: "capability",
-      details: data.summary.capability,
-      evidence: topGap ? [
-        `出现次数：${topGap.count} 次`,
-        `覆盖状态：${topGap.status}`,
-        `关联主体：${topGap.entity}`,
-        `建议动作：${topGap.action}`
-      ] : ["当前筛选条件下未识别到明显能力缺口。"]
-    }
-  ];
-}
-
-function SummaryModal({ card, onClose }: { card: SummaryCard; onClose: () => void }) {
+function InsightTable({ title, description, headers, rows }: { title: string; description: string; headers: string[]; rows: string[][] }) {
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="metric-modal summary-modal" onClick={(event) => event.stopPropagation()}>
-        <div className="modal-head">
-          <div>
-            <h2>{card.title}</h2>
-            <p className="subtle">{card.conclusion}</p>
-          </div>
-          <button className="button" onClick={onClose}>关闭</button>
-        </div>
-        <div className="summary-detail-grid">
-          <section>
-            <h3>建议理由</h3>
-            <ol>
-              {card.details.map((item) => <li key={item}>{item}</li>)}
-            </ol>
-          </section>
-          <section>
-            <h3>数据支撑</h3>
-            <ul>
-              {card.evidence.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-          </section>
-        </div>
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              {headers.map((header) => <TableHead key={header}>{header}</TableHead>)}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length ? rows.map((row) => (
+              <TableRow key={row.join("-")}>
+                {row.map((cell, index) => <TableCell key={`${cell}-${index}`} className={index === 0 ? "font-medium" : ""}>{cell}</TableCell>)}
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={headers.length} className="text-center text-muted-foreground">当前筛选条件下暂无数据。</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
-}
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("zh-CN").format(value);
 }
