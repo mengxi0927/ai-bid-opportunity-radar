@@ -92,56 +92,16 @@ export default function InsightsPage() {
           </section>
 
           <section className="insights-grid">
-            <Panel title="客户需求动态" note="已有客户与重点客户近期动作" className="span-2">
-              <DataTable
-                className="customer-dynamics-table"
-                emptyText="当前筛选条件下暂无可识别客户动态。"
-                headers={["客户名称", "客户类型", "近期标讯数量", "主要需求方向", "最近发布时间", "建议动作"]}
-                rows={data.customer_dynamics.map((row) => [
-                  row.customer_name,
-                  row.customer_type,
-                  `${row.notice_count}条`,
-                  row.directions,
-                  row.latest_published_at,
-                  row.suggested_action
-                ])}
-              />
-            </Panel>
-
             <Panel title="行业趋势分析" note="行业 TOP5">
-              <DataTable
-                emptyText="当前筛选条件下暂无行业趋势。"
-                headers={["行业", "标讯数量", "环比变化", "高频关键词", "关注建议"]}
-                rows={data.industry_trends.map((row) => [
-                  row.industry,
-                  String(row.notice_count),
-                  row.change,
-                  row.keywords,
-                  row.suggestion
-                ])}
-              />
+              <IndustryTrendChart rows={data.industry_trends} />
             </Panel>
 
             <Panel title="技术关键词热度" note="点击关键词查看相关标讯数量">
-              <div className="keyword-cloud">
-                {data.keywords.map((item) => (
-                  <button
-                    className={activeKeyword?.label === item.label ? "active" : ""}
-                    key={item.label}
-                    onClick={() => setActiveKeyword(item)}
-                    type="button"
-                  >
-                    <strong>{item.label}</strong>
-                    <span>{item.count}次 {item.change}</span>
-                  </button>
-                ))}
-              </div>
-              {activeKeyword && (
-                <div className="keyword-detail">
-                  <strong>{activeKeyword.label}</strong>
-                  <span>相关标讯数量：{activeKeyword.count} 条，热度变化 {activeKeyword.change}</span>
-                </div>
-              )}
+              <KeywordHeatPanel keywords={data.keywords} activeKeyword={activeKeyword} onSelect={setActiveKeyword} />
+            </Panel>
+
+            <Panel title="区域市场活跃度" note="近期公开采购热度">
+              <RegionRadar rows={data.regions} />
             </Panel>
 
             <Panel title="高频资质与能力要求" note="市场要求与公司覆盖情况">
@@ -169,10 +129,6 @@ export default function InsightsPage() {
                   </tbody>
                 </table>
               </div>
-            </Panel>
-
-            <Panel title="区域市场活跃度" note="近期公开采购热度">
-              <RegionRadar rows={data.regions} />
             </Panel>
 
             <Panel title="竞争信号" note="中标、成交和结果公告中的外部动作">
@@ -246,6 +202,44 @@ function StatusBadge({ status }: { status: string }) {
   return <span className={`coverage-badge ${tone}`}>{status}</span>;
 }
 
+function IndustryTrendChart({ rows }: { rows: MarketInsights["industry_trends"] }) {
+  if (!rows.length) {
+    return <div className="empty">当前筛选条件下暂无行业趋势。</div>;
+  }
+
+  const max = Math.max(1, ...rows.map((row) => row.notice_count));
+
+  return (
+    <div className="industry-chart">
+      {rows.map((row, index) => {
+        const isDown = row.change.startsWith("-");
+        return (
+          <div className={`industry-chart-row tone-${index}`} key={row.industry}>
+            <div className="industry-rank">{index + 1}</div>
+            <div className="industry-main">
+              <div className="industry-head">
+                <strong>{row.industry}</strong>
+                <span className={isDown ? "down" : "up"}>{row.change}</span>
+              </div>
+              <div className="industry-bar-track">
+                <i style={{ width: `${Math.max(8, (row.notice_count / max) * 100)}%` }} />
+              </div>
+              <div className="industry-meta">
+                <span>{row.keywords}</span>
+                <em>{row.suggestion}</em>
+              </div>
+            </div>
+            <div className="industry-count">
+              <strong>{row.notice_count}</strong>
+              <span>条</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function RegionRadar({ rows }: { rows: MarketInsights["regions"] }) {
   if (!rows.length) {
     return <div className="empty">当前筛选条件下暂无区域活跃度。</div>;
@@ -300,6 +294,65 @@ function RegionRadar({ rows }: { rows: MarketInsights["regions"] }) {
             <em>{row.directions}</em>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function KeywordHeatPanel({
+  keywords,
+  activeKeyword,
+  onSelect
+}: {
+  keywords: MarketInsights["keywords"];
+  activeKeyword: MarketInsights["keywords"][number] | null;
+  onSelect: (keyword: MarketInsights["keywords"][number]) => void;
+}) {
+  if (!keywords.length) {
+    return <div className="empty">当前筛选条件下暂无关键词热度。</div>;
+  }
+
+  const max = Math.max(1, ...keywords.map((item) => item.count));
+  const topKeywords = keywords.slice(0, 6);
+  const selected = activeKeyword || keywords[0];
+
+  return (
+    <div className="keyword-visual">
+      <div className="keyword-bubbles" aria-label="技术关键词热度气泡图">
+        {keywords.map((item, index) => {
+          const size = 74 + (item.count / max) * 58;
+          return (
+            <button
+              className={`keyword-bubble tone-${index % 5} ${selected.label === item.label ? "active" : ""}`}
+              key={item.label}
+              onClick={() => onSelect(item)}
+              style={{ width: size, height: size }}
+              type="button"
+            >
+              <strong>{item.label}</strong>
+              <span>{item.count}次</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="keyword-rank">
+        {topKeywords.map((item, index) => (
+          <button
+            className={selected.label === item.label ? "active" : ""}
+            key={item.label}
+            onClick={() => onSelect(item)}
+            type="button"
+          >
+            <span>{index + 1}</span>
+            <strong>{item.label}</strong>
+            <div className="keyword-bar"><i style={{ width: `${Math.max(8, (item.count / max) * 100)}%` }} /></div>
+            <em>{item.count}次</em>
+          </button>
+        ))}
+      </div>
+      <div className="keyword-detail keyword-visual-detail">
+        <strong>{selected.label}</strong>
+        <span>相关标讯数量：{selected.count} 条，热度变化 {selected.change}</span>
       </div>
     </div>
   );
