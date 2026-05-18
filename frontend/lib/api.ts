@@ -89,6 +89,75 @@ export type MetricDetail = {
   note: string;
 };
 
+export type MarketInsightMetric = {
+  label: string;
+  value: number;
+  change: string;
+  note: string;
+};
+
+export type MarketInsights = {
+  filters: {
+    range: string;
+    industry: string;
+    region: string;
+  };
+  data_source: {
+    total_imported: number;
+    filtered_total: number;
+    latest_date: string;
+  };
+  metrics: MarketInsightMetric[];
+  customer_dynamics: Array<{
+    customer_name: string;
+    customer_type: string;
+    notice_count: number;
+    directions: string;
+    latest_published_at: string;
+    suggested_action: string;
+  }>;
+  industry_trends: Array<{
+    industry: string;
+    notice_count: number;
+    change: string;
+    keywords: string;
+    suggestion: string;
+  }>;
+  keywords: Array<{
+    label: string;
+    count: number;
+    change: string;
+  }>;
+  capabilities: Array<{
+    name: string;
+    count: number;
+    status: string;
+    entity: string;
+    action: string;
+  }>;
+  regions: Array<{
+    region: string;
+    notice_count: number;
+    related_count: number;
+    directions: string;
+    active_customers: number;
+    suggestion: string;
+  }>;
+  competitors: Array<{
+    company: string;
+    wins: number;
+    industry: string;
+    capability: string;
+    existing_customer: string;
+    action: string;
+  }>;
+  summary: {
+    sales: string[];
+    management: string[];
+    capability: string[];
+  };
+};
+
 export type Draft = {
   id: string;
   type: string;
@@ -123,6 +192,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export function getOverview() {
   return request<Overview>("/overview");
+}
+
+export function getMarketInsights(search = "") {
+  return request<MarketInsights>(`/insights${search}`);
 }
 
 export function getTenders(search = "") {

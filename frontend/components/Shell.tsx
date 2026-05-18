@@ -15,6 +15,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <Link href="/">概览</Link>
           <Link href="/tenders">标讯推荐</Link>
           <Link href="/value">价值看板</Link>
+          <Link href="/insights">市场洞察</Link>
         </nav>
       </aside>
       <section className="workspace">{children}</section>

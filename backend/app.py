@@ -13,6 +13,7 @@ from services.cecbid import CecbidParseError, crawl_cecbid_week, fetch_cecbid_te
 from services.company_capabilities import capability_context_for_qwen, stats_summary
 from services.opportunity_history import opportunity_context_for_qwen, stats_summary as opportunity_stats_summary
 from services.qwen import QwenAnalysisError, analyze_tender_with_qwen, qwen_configured
+from services.market_insights import build_market_insights
 from services.radar import create_draft, get_tender, list_tenders, overview
 
 
@@ -73,6 +74,16 @@ def api_tenders():
         "q": request.args.get("q", ""),
     }
     return jsonify({"items": list_tenders(filters, IMPORTED_TENDERS)})
+
+
+@app.route("/api/insights")
+def api_market_insights():
+    filters = {
+        "range": request.args.get("range", "本月"),
+        "industry": request.args.get("industry", "全部"),
+        "region": request.args.get("region", "全部"),
+    }
+    return jsonify(build_market_insights(IMPORTED_TENDERS, filters))
 
 
 @app.route("/api/tenders/<tender_id>")
