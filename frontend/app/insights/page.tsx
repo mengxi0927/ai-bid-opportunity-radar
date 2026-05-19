@@ -64,7 +64,7 @@ export default function InsightsPage() {
 
       {data && (
         <>
-          <section className="metric-grid">
+          <section className="market-metric-grid">
             {data.metrics.map((item) => (
               <Card key={item.label} className="glass-card">
                 <CardHeader className="pb-3">
@@ -79,8 +79,8 @@ export default function InsightsPage() {
             ))}
           </section>
 
-          <section className="dashboard-grid">
-            <Card className="glass-card accent-card-blue">
+          <section className="insights-overview-grid">
+            <Card className="glass-card accent-card-blue insights-summary-card">
               <CardHeader>
                 <CardTitle>AI 总结</CardTitle>
                 <CardDescription>销售、管理和能力团队分别应该关注什么</CardDescription>
@@ -92,7 +92,7 @@ export default function InsightsPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card accent-card-red">
+            <Card className="glass-card accent-card-red insights-source-card">
               <CardHeader>
                 <CardTitle>数据源概况</CardTitle>
                 <CardDescription>当前筛选窗口下的真实数据范围</CardDescription>
@@ -108,26 +108,24 @@ export default function InsightsPage() {
             </Card>
           </section>
 
-          <section className="dashboard-grid">
+          <section className="insights-module-grid">
             <InsightTable
+              className="insights-module-wide"
               title="行业趋势"
               description="近期哪些方向更值得持续盯住"
               headers={["行业", "公告数", "变化", "关键词", "建议"]}
               rows={data.industry_trends.map((row) => [row.industry, `${row.notice_count}`, row.change, row.keywords, row.suggestion])}
             />
+            <RegionRadarCard rows={data.regions} />
             <InsightTable
-              title="区域活跃度"
-              description="市场热度和相关机会分布"
-              headers={["区域", "公告数", "相关商机", "重点方向", "活跃客户", "建议"]}
-              rows={data.regions.map((row) => [row.region, `${row.notice_count}`, `${row.related_count}`, row.directions, `${row.active_customers}`, row.suggestion])}
-            />
-            <InsightTable
+              className="insights-module-half"
               title="客户动态"
               description="值得销售补充关系背景的客户线索"
               headers={["客户", "类型", "公告数", "方向", "最近公告", "建议动作"]}
               rows={data.customer_dynamics.map((row) => [row.customer_name, row.customer_type, `${row.notice_count}`, row.directions, row.latest_published_at, row.suggested_action])}
             />
             <InsightTable
+              className="insights-module-half"
               title="能力要求"
               description="市场需求与公司资质覆盖情况"
               headers={["要求名称", "出现次数", "状态", "法人体", "建议动作"]}
@@ -135,52 +133,7 @@ export default function InsightsPage() {
             />
           </section>
 
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle>技术关键词与竞争信号</CardTitle>
-              <CardDescription>用热词和结果公告观察市场方向与外部竞争动作</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
-              <div className="flex flex-wrap gap-2">
-                {data.keywords.map((item) => (
-                  <div className="rounded-full border border-border bg-muted/30 px-3 py-2 text-sm" key={item.label}>
-                    <span className="font-medium">{item.label}</span>
-                    <span className="ml-2 text-muted-foreground">{item.count}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{item.change}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead>竞争企业</TableHead>
-                    <TableHead>中标次数</TableHead>
-                    <TableHead>主要行业</TableHead>
-                    <TableHead>能力方向</TableHead>
-                    <TableHead>已有客户</TableHead>
-                    <TableHead>建议动作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.competitors.length ? data.competitors.map((row) => (
-                    <TableRow key={row.company}>
-                      <TableCell className="font-medium">{row.company}</TableCell>
-                      <TableCell>{row.wins}</TableCell>
-                      <TableCell>{row.industry}</TableCell>
-                      <TableCell>{row.capability}</TableCell>
-                      <TableCell>{row.existing_customer}</TableCell>
-                      <TableCell>{row.action}</TableCell>
-                    </TableRow>
-                  )) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground">当前筛选条件下暂无竞争信号。</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <KeywordCompetitionPanel keywords={data.keywords} competitors={data.competitors} />
         </>
       )}
     </Shell>
@@ -207,32 +160,177 @@ function StatRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function InsightTable({ title, description, headers, rows }: { title: string; description: string; headers: string[]; rows: string[][] }) {
+function KeywordCompetitionPanel({
+  keywords,
+  competitors
+}: {
+  keywords: MarketInsights["keywords"];
+  competitors: MarketInsights["competitors"];
+}) {
+  const maxKeywordCount = Math.max(1, ...keywords.map((item) => item.count));
+  const topKeywords = keywords.slice(0, 8);
+
   return (
-    <Card className="glass-card">
+    <section className="keyword-competition-panel">
+      <Card className="glass-card keyword-card">
+        <CardHeader>
+          <CardTitle>技术关键词热度</CardTitle>
+          <CardDescription>识别近期需求里被反复提及的技术方向</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="keyword-leader">
+            <span>最高频</span>
+            <strong>{topKeywords[0]?.label || "暂无"}</strong>
+            <em>{topKeywords[0]?.count || 0} 次</em>
+          </div>
+          <div className="keyword-bars">
+            {topKeywords.map((item, index) => (
+              <div className="keyword-bar-row" key={item.label}>
+                <span>{index + 1}</span>
+                <strong>{item.label}</strong>
+                <div><i style={{ width: `${Math.max(6, (item.count / maxKeywordCount) * 100)}%` }} /></div>
+                <em>{item.count}次</em>
+                <small className={item.change.startsWith("-") ? "down" : "up"}>{item.change}</small>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="glass-card competition-card">
+        <CardHeader>
+          <CardTitle>竞争信号</CardTitle>
+          <CardDescription>从中标、成交和结果公告中观察外部动作</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="competition-list">
+            {competitors.length ? competitors.slice(0, 6).map((row, rowIndex) => (
+              <div className="competition-item" key={`${rowIndex}-${row.company}`}>
+                <div>
+                  <strong>{row.company}</strong>
+                  <span>{row.industry} · {row.capability}</span>
+                </div>
+                <div className="competition-meta">
+                  <Badge variant={row.existing_customer === "是" ? "warning" : "outline"}>{row.existing_customer === "是" ? "涉及已有客户" : "非已有客户"}</Badge>
+                  <em>{row.wins} 次</em>
+                </div>
+                <p>{row.action}</p>
+              </div>
+            )) : (
+              <div className="rounded-xl border border-border/70 bg-muted/20 p-5 text-center text-sm text-muted-foreground">
+                当前筛选条件下暂无竞争信号。
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+
+function RegionRadarCard({ rows }: { rows: MarketInsights["regions"] }) {
+  if (!rows.length) {
+    return (
+      <Card className="glass-card insights-radar-card">
+        <CardHeader>
+          <CardTitle>区域活跃度</CardTitle>
+          <CardDescription>市场热度和相关机会分布</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center text-sm text-muted-foreground">当前筛选条件下暂无区域活跃度。</CardContent>
+      </Card>
+    );
+  }
+
+  const size = 280;
+  const center = size / 2;
+  const radius = 92;
+  const max = Math.max(1, ...rows.map((row) => row.notice_count));
+  const points = rows.map((row, index) => {
+    const angle = (Math.PI * 2 * index) / rows.length - Math.PI / 2;
+    const valueRadius = radius * (row.notice_count / max);
+    return {
+      ...row,
+      axisX: center + Math.cos(angle) * radius,
+      axisY: center + Math.sin(angle) * radius,
+      valueX: center + Math.cos(angle) * valueRadius,
+      valueY: center + Math.sin(angle) * valueRadius,
+      labelX: center + Math.cos(angle) * (radius + 30),
+      labelY: center + Math.sin(angle) * (radius + 30)
+    };
+  });
+  const polygon = points.map((point) => `${point.valueX},${point.valueY}`).join(" ");
+
+  return (
+    <Card className="glass-card insights-radar-card">
+      <CardHeader>
+        <CardTitle>区域活跃度</CardTitle>
+        <CardDescription>市场热度和相关机会分布</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="region-radar-layout">
+          <svg className="region-radar" viewBox={`0 0 ${size} ${size}`} role="img" aria-label="区域市场活跃度雷达图">
+            {[0.25, 0.5, 0.75, 1].map((scale) => {
+              const grid = rows.map((_, index) => {
+                const angle = (Math.PI * 2 * index) / rows.length - Math.PI / 2;
+                return `${center + Math.cos(angle) * radius * scale},${center + Math.sin(angle) * radius * scale}`;
+              }).join(" ");
+              return <polygon className="radar-grid" points={grid} key={scale} />;
+            })}
+            {points.map((point) => (
+              <line className="radar-axis" x1={center} y1={center} x2={point.axisX} y2={point.axisY} key={`${point.region}-axis`} />
+            ))}
+            <polygon className="radar-area" points={polygon} />
+            {points.map((point) => (
+              <g key={point.region}>
+                <circle className="radar-dot" cx={point.valueX} cy={point.valueY} r="4" />
+                <text className="radar-label" x={point.labelX} y={point.labelY} textAnchor="middle" dominantBaseline="middle">{point.region}</text>
+              </g>
+            ))}
+          </svg>
+          <div className="region-radar-list">
+            {rows.map((row) => (
+              <div className="region-radar-row" key={row.region}>
+                <strong>{row.region}</strong>
+                <span>{row.notice_count} 条公告</span>
+                <span>{row.related_count} 条相关</span>
+                <em>{row.directions}</em>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function InsightTable({ title, description, headers, rows, className = "" }: { title: string; description: string; headers: string[]; rows: string[][]; className?: string }) {
+  return (
+    <Card className={`glass-card ${className}`}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              {headers.map((header) => <TableHead key={header}>{header}</TableHead>)}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.length ? rows.map((row) => (
-              <TableRow key={row.join("-")}>
-                {row.map((cell, index) => <TableCell key={`${cell}-${index}`} className={index === 0 ? "font-medium" : ""}>{cell}</TableCell>)}
+        <div className="insight-table-scroll">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                {headers.map((header) => <TableHead key={header}>{header}</TableHead>)}
               </TableRow>
-            )) : (
-              <TableRow>
-                <TableCell colSpan={headers.length} className="text-center text-muted-foreground">当前筛选条件下暂无数据。</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {rows.length ? rows.map((row, rowIndex) => (
+                <TableRow key={`${rowIndex}-${row.join("-")}`}>
+                  {row.map((cell, index) => <TableCell key={`${rowIndex}-${cell}-${index}`} className={index === 0 ? "font-medium" : ""}>{cell}</TableCell>)}
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={headers.length} className="text-center text-muted-foreground">当前筛选条件下暂无数据。</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

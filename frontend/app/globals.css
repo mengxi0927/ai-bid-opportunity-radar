@@ -144,6 +144,148 @@
     @apply grid gap-4 lg:grid-cols-2;
   }
 
+  .market-metric-grid {
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6;
+  }
+
+  .market-metric-grid .glass-card {
+    @apply min-h-[150px];
+  }
+
+  .insights-overview-grid {
+    @apply grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.85fr)];
+  }
+
+  .insights-summary-card,
+  .insights-source-card {
+    @apply min-h-[320px];
+  }
+
+  .insights-module-grid {
+    @apply grid gap-5 xl:grid-cols-12;
+  }
+
+  .insights-module-wide {
+    @apply xl:col-span-7;
+  }
+
+  .insights-radar-card {
+    @apply xl:col-span-5;
+  }
+
+  .insights-module-half {
+    @apply xl:col-span-6;
+  }
+
+  .insights-full-card {
+    @apply overflow-hidden;
+  }
+
+  .keyword-competition-panel {
+    @apply grid gap-5 xl:grid-cols-[minmax(360px,0.8fr)_minmax(0,1.2fr)];
+  }
+
+  .keyword-card,
+  .competition-card {
+    @apply overflow-hidden;
+  }
+
+  .keyword-leader {
+    @apply mb-5 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-5;
+  }
+
+  .keyword-leader span {
+    @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
+  }
+
+  .keyword-leader strong {
+    @apply mt-2 block text-3xl font-semibold tracking-tight text-slate-950;
+  }
+
+  .keyword-leader em {
+    @apply mt-2 block text-sm not-italic text-muted-foreground;
+  }
+
+  .keyword-bars {
+    @apply grid gap-3;
+  }
+
+  .keyword-bar-row {
+    @apply grid grid-cols-[28px_minmax(76px,0.8fr)_minmax(0,1.2fr)_44px_54px] items-center gap-3 rounded-xl border border-border/70 bg-white/70 px-3 py-3 text-sm;
+  }
+
+  .keyword-bar-row > span {
+    @apply grid h-7 w-7 place-items-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700;
+  }
+
+  .keyword-bar-row strong {
+    @apply truncate font-medium text-slate-950;
+  }
+
+  .keyword-bar-row div {
+    @apply h-2.5 overflow-hidden rounded-full bg-slate-100;
+  }
+
+  .keyword-bar-row i {
+    @apply block h-full rounded-full bg-gradient-to-r from-blue-600 to-emerald-400;
+  }
+
+  .keyword-bar-row em {
+    @apply text-right text-xs not-italic text-muted-foreground;
+  }
+
+  .keyword-bar-row small {
+    @apply rounded-full px-2 py-1 text-center text-xs font-semibold;
+  }
+
+  .keyword-bar-row small.up {
+    @apply bg-emerald-50 text-emerald-700;
+  }
+
+  .keyword-bar-row small.down {
+    @apply bg-rose-50 text-rose-700;
+  }
+
+  .competition-list {
+    @apply grid gap-3;
+  }
+
+  .competition-item {
+    @apply grid gap-3 rounded-2xl border border-border/70 bg-white/70 p-4 transition hover:border-blue-200 hover:bg-white;
+  }
+
+  .competition-item > div:first-child {
+    @apply min-w-0;
+  }
+
+  .competition-item strong {
+    @apply block truncate text-sm font-semibold text-slate-950;
+  }
+
+  .competition-item span {
+    @apply mt-1 block text-xs text-muted-foreground;
+  }
+
+  .competition-meta {
+    @apply flex flex-wrap items-center justify-between gap-2;
+  }
+
+  .competition-meta em {
+    @apply rounded-full bg-slate-100 px-2.5 py-1 text-xs not-italic text-slate-600;
+  }
+
+  .competition-item p {
+    @apply m-0 text-sm leading-6 text-slate-600;
+  }
+
+  .insight-table-scroll {
+    @apply overflow-x-auto;
+  }
+
+  .insight-table-scroll table {
+    @apply min-w-[720px];
+  }
+
   .table-card {
     @apply overflow-hidden rounded-xl border border-border/70 bg-card shadow-panel;
   }
@@ -823,43 +965,43 @@ td small {
 .region-radar-layout {
   align-items: center;
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(240px, 0.95fr) minmax(0, 1.05fr);
+  gap: 18px;
 }
 
 .region-radar {
-  background: #f8faf8;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  height: 280px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(239, 246, 255, 0.78));
+  border: 1px solid hsl(var(--border) / 0.8);
+  border-radius: 18px;
+  height: 300px;
   width: 100%;
 }
 
 .radar-grid {
   fill: none;
-  stroke: #d8e3dd;
+  stroke: hsl(var(--border));
   stroke-width: 1;
 }
 
 .radar-axis {
-  stroke: #e2e8e3;
+  stroke: hsl(var(--border) / 0.72);
   stroke-width: 1;
 }
 
 .radar-area {
-  fill: rgba(23, 116, 91, 0.18);
-  stroke: var(--green);
+  fill: rgba(37, 99, 235, 0.18);
+  stroke: hsl(var(--primary));
   stroke-width: 2;
 }
 
 .radar-dot {
-  fill: var(--green);
+  fill: hsl(var(--primary));
   stroke: white;
   stroke-width: 2;
 }
 
 .radar-label {
-  fill: #394541;
+  fill: hsl(var(--foreground));
   font-size: 12px;
   font-weight: 700;
 }
@@ -871,16 +1013,18 @@ td small {
 
 .region-radar-row {
   align-items: center;
-  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid hsl(var(--border) / 0.74);
+  border-radius: 14px;
   display: grid;
-  grid-template-columns: 48px 82px 82px minmax(0, 1fr);
+  grid-template-columns: 44px 82px 82px minmax(0, 1fr);
   gap: 8px;
-  padding: 8px 0;
+  padding: 9px 10px;
 }
 
 .region-radar-row span,
 .region-radar-row em {
-  color: var(--muted);
+  color: hsl(var(--muted-foreground));
   font-size: 12px;
   font-style: normal;
   white-space: nowrap;
