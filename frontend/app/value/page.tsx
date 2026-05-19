@@ -48,19 +48,21 @@ export default function ValuePage() {
 
   return (
     <Shell>
-      <section className="page-header">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Value Dashboard</p>
-          <h1 className="page-title">价值指标看板</h1>
-          <p className="page-description">用更克制的管理视图看系统价值，不堆砌花哨图表，而是聚焦效率、质量和转化潜力。</p>
-        </div>
-        <div className="flex gap-3">
-          <Button asChild>
-            <Link href="/tenders?level=高优先级">查看高优先级项目</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/">返回概览</Link>
-          </Button>
+      <section className="hero-panel px-6 py-8 sm:px-8">
+        <div className="page-header">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Value Dashboard</p>
+            <h1 className="page-title">价值指标看板</h1>
+            <p className="page-description">用更克制的管理视图看系统价值，不堆砌花哨图表，而是聚焦效率、质量和转化潜力。</p>
+          </div>
+          <div className="flex gap-3">
+            <Button asChild>
+              <Link href="/tenders?level=高优先级">查看高优先级项目</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/">返回概览</Link>
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -74,7 +76,7 @@ export default function ValuePage() {
         <>
           <section className="metric-grid">
             {model.cards.map((item) => (
-              <Card key={item.label}>
+              <Card key={item.label} className="glass-card">
                 <CardHeader className="pb-3">
                   <CardDescription>{item.label}</CardDescription>
                   <CardTitle className="font-mono text-3xl">
@@ -88,7 +90,7 @@ export default function ValuePage() {
           </section>
 
           <section className="dashboard-grid">
-            <Card>
+            <Card className="glass-card accent-card-blue">
               <CardHeader>
                 <CardTitle>结果指标</CardTitle>
                 <CardDescription>系统从扫描到跟进的链路产出</CardDescription>
@@ -106,7 +108,7 @@ export default function ValuePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="glass-card accent-card-red">
               <CardHeader>
                 <CardTitle>管理视角建议</CardTitle>
                 <CardDescription>当前数据下更适合关注什么</CardDescription>

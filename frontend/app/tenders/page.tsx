@@ -83,21 +83,41 @@ export default function TendersPage() {
 
   return (
     <Shell>
-      <section className="page-header">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Tender Workspace</p>
-          <h1 className="page-title">标讯推荐工作台</h1>
-          <p className="page-description">
-            这里是每日使用的核心页面。按推荐等级、风险和客户匹配快速筛选项目，再进入详情页生成线索或商机草稿。
-          </p>
+      <section className="hero-panel px-6 py-8 sm:px-8">
+        <div className="page-header">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Tender Workspace</p>
+            <h1 className="page-title">标讯推荐工作台</h1>
+            <p className="page-description">
+              这里是每日使用的核心页面。按推荐等级、风险和客户匹配快速筛选项目，再进入详情页生成线索或商机草稿。
+            </p>
+          </div>
+          <Button onClick={handleCrawlWeek} disabled={crawling}>
+            <RefreshCcw className={`mr-2 h-4 w-4 ${crawling ? "animate-spin" : ""}`} />
+            {crawling ? "同步中..." : "同步本周标讯"}
+          </Button>
         </div>
-        <Button onClick={handleCrawlWeek} disabled={crawling}>
-          <RefreshCcw className={`mr-2 h-4 w-4 ${crawling ? "animate-spin" : ""}`} />
-          {crawling ? "同步中..." : "同步本周标讯"}
-        </Button>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="fancy-metric accent-card-blue">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Priority Sweep</p>
+            <p className="mt-2 text-lg font-semibold text-slate-950">优先扫高分、高匹配项目</p>
+            <p className="mt-3 text-sm text-slate-600">用更强视觉对比帮助团队先处理最值得推进的目标。</p>
+          </div>
+          <div className="fancy-metric accent-card-red">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Risk First</p>
+            <p className="mt-2 text-lg font-semibold text-slate-950">先看红色风险，再看蓝色机会</p>
+            <p className="mt-3 text-sm text-slate-600">将阻塞项提前暴露，避免漂亮项目在后期才发现不可投。</p>
+          </div>
+          <div className="fancy-metric">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Action Ready</p>
+            <p className="mt-2 text-lg font-semibold text-slate-950">收藏、分析、转草稿形成闭环</p>
+            <p className="mt-3 text-sm text-slate-600">让视觉层级直接支持日常工作节奏，而不是只做静态列表。</p>
+          </div>
+        </div>
       </section>
 
-      <Card>
+      <Card className="glass-card">
         <CardHeader>
           <CardTitle>筛选与视图</CardTitle>
           <CardDescription>将高优先级、风险待核验和收藏项目组织成固定工作流。</CardDescription>
@@ -158,7 +178,7 @@ export default function TendersPage() {
       </Card>
 
       {error ? (
-        <Card className="border-rose-200 bg-rose-50/70">
+        <Card className="glass-card border-rose-200 bg-rose-50/80">
           <CardContent className="p-6 text-sm text-rose-800">{error}</CardContent>
         </Card>
       ) : (

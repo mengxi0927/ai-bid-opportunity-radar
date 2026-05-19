@@ -61,36 +61,53 @@ export default function TenderDetailPage() {
   return (
     <Shell>
       {message && (
-        <Card className="border-sky-200 bg-sky-50/70">
+        <Card className="glass-card border-sky-200 bg-sky-50/80">
           <CardContent className="p-4 text-sm text-sky-900">{message}</CardContent>
         </Card>
       )}
 
       {item && (
         <>
-          <section className="page-header">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Tender Dossier</p>
-              <h1 className="page-title">{item.title}</h1>
-              <p className="page-description">{item.buyer} · {item.source} · 发布于 {item.published_at} · 截止 {item.deadline}</p>
+          <section className="hero-panel px-6 py-8 sm:px-8">
+            <div className="page-header">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Tender Dossier</p>
+                <h1 className="page-title">{item.title}</h1>
+                <p className="page-description">{item.buyer} · {item.source} · 发布于 {item.published_at} · 截止 {item.deadline}</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button onClick={() => handleDraft("lead")}>生成线索草稿</Button>
+                <Button variant="outline" onClick={() => handleDraft("opportunity")}>生成商机草稿</Button>
+                <Button variant="secondary" onClick={handleQwenAnalysis} disabled={!qwenConfigured || analyzing}>
+                  {analyzing ? "千问分析中..." : "运行 Qwen 分析"}
+                </Button>
+                <Button asChild variant="ghost">
+                  <a href={item.source_url} target="_blank" rel="noreferrer">
+                    查看原文
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Button onClick={() => handleDraft("lead")}>生成线索草稿</Button>
-              <Button variant="outline" onClick={() => handleDraft("opportunity")}>生成商机草稿</Button>
-              <Button variant="secondary" onClick={handleQwenAnalysis} disabled={!qwenConfigured || analyzing}>
-                {analyzing ? "千问分析中..." : "运行 Qwen 分析"}
-              </Button>
-              <Button asChild variant="ghost">
-                <a href={item.source_url} target="_blank" rel="noreferrer">
-                  查看原文
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              <div className="fancy-metric accent-card-blue">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Recommendation</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">蓝色表示机会强度与推进可能性</p>
+              </div>
+              <div className="fancy-metric accent-card-red">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Risk Exposure</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">红色强调需要先被核验的阻塞项</p>
+              </div>
+              <div className="fancy-metric">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Decision Mode</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">把情报阅读变成有结论的销售决策</p>
+              </div>
             </div>
           </section>
 
           {!qwenConfigured && (
-            <Card className="border-amber-200 bg-amber-50/80">
+            <Card className="glass-card border-amber-200 bg-amber-50/85">
               <CardContent className="flex items-center justify-between gap-4 p-5">
                 <div>
                   <div className="font-medium text-amber-900">千问未配置</div>
@@ -234,7 +251,7 @@ export default function TenderDetailPage() {
 
 function MetricCard({ label, value, valueNode }: { label: string; value?: string; valueNode?: React.ReactNode }) {
   return (
-    <Card>
+    <Card className="glass-card">
       <CardHeader className="pb-3">
         <CardDescription>{label}</CardDescription>
         <CardTitle className="font-mono text-3xl">{valueNode || value}</CardTitle>
@@ -245,7 +262,7 @@ function MetricCard({ label, value, valueNode }: { label: string; value?: string
 
 function InsightCard({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
-    <Card>
+    <Card className="glass-card">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

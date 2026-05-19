@@ -21,7 +21,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <aside className="sticky top-4 hidden h-[calc(100vh-2rem)] w-72 shrink-0 flex-col overflow-hidden rounded-[28px] border border-slate-900/10 bg-slate-950 text-slate-100 shadow-2xl lg:flex">
         <div className="border-b border-white/10 px-6 py-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-400/40 via-blue-300/20 to-red-400/40 ring-1 ring-white/10">
               <Sparkles className="h-5 w-5 text-sky-300" />
             </div>
             <div>
@@ -41,7 +41,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
-                  active ? "bg-white text-slate-950 shadow-lg" : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  active ? "bg-gradient-to-r from-white via-slate-50 to-white text-slate-950 shadow-lg" : "text-slate-300 hover:bg-white/10 hover:text-white"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -62,13 +62,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="min-w-0 flex-1">
-        <div className="mb-6 flex items-center justify-between rounded-2xl border border-border/70 bg-white/80 px-5 py-4 shadow-panel backdrop-blur">
+        <div className="hero-panel mb-6 flex items-center justify-between px-5 py-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Bid Radar Workspace</p>
-            <p className="mt-1 text-sm text-slate-700">客户、资质、风险、推荐结论统一进入同一条工作流</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Bid Radar Workspace</p>
+            <p className="mt-1 text-sm font-medium text-slate-800">客户、资质、风险、推荐结论统一进入同一条工作流</p>
           </div>
           <div className="hidden items-center gap-2 sm:flex">
-            <Badge variant="neutral">实时分析</Badge>
+            <Badge variant="info" className="bg-blue-50 text-blue-700">实时分析</Badge>
+            <Badge variant="danger" className="bg-rose-50 text-rose-700">红蓝主题</Badge>
             <Badge variant="outline">本地开发环境</Badge>
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, ShieldAlert, Sparkles, Target } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Flame, ShieldAlert, Sparkles, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getOverview, MetricDetail, Overview } from "@/lib/api";
 import { Shell } from "@/components/Shell";
@@ -37,21 +37,56 @@ export default function HomePage() {
 
   return (
     <Shell>
-      <section className="page-header">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Overview</p>
-          <h1 className="page-title">本周商机雷达概览</h1>
-          <p className="page-description">
-            将公开标讯转成可执行的销售情报，优先显示高价值项目、客户关联、能力覆盖与风险判断。
-          </p>
+      <section className="hero-panel px-6 py-8 sm:px-8">
+        <div className="page-header">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Overview</p>
+            <h1 className="page-title">本周商机雷达概览</h1>
+            <p className="page-description">
+              将公开标讯转成可执行的销售情报，优先显示高价值项目、客户关联、能力覆盖与风险判断。
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild>
+              <Link href="/tenders?level=高优先级">查看高优先级项目</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/tenders">进入标讯工作台</Link>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/tenders?level=高优先级">查看高优先级项目</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/tenders">进入标讯工作台</Link>
-          </Button>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="fancy-metric accent-card-blue">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Signal Engine</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">客户与能力交叉判断</p>
+              </div>
+              <Target className="h-5 w-5 text-blue-600" />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-600">从公开公告中快速筛出真正值得销售和售前投入的项目，不再靠人工通读全文。</p>
+          </div>
+          <div className="fancy-metric accent-card-red">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Risk Lens</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">风险、预算、主体同屏呈现</p>
+              </div>
+              <ShieldAlert className="h-5 w-5 text-rose-600" />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-600">高风险项目先暴露关键阻塞点，让团队在决策前就知道是否值得继续推进。</p>
+          </div>
+          <div className="fancy-metric">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Action Loop</p>
+                <p className="mt-2 text-lg font-semibold text-slate-950">从洞察直接转草稿与反馈</p>
+              </div>
+              <Flame className="h-5 w-5 text-violet-600" />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-600">让推荐结论、AI 分析和销售动作自然连成一条流，而不是分散在多个工具里。</p>
+          </div>
         </div>
       </section>
 
@@ -75,7 +110,7 @@ export default function HomePage() {
         <>
           <section className="metric-grid">
             {Object.entries(data.metrics).map(([key, value]) => (
-              <Card key={key}>
+              <Card key={key} className="glass-card">
                 <CardHeader className="pb-3">
                   <CardDescription>{metricLabels[key] || key}</CardDescription>
                   <CardTitle className="font-mono text-3xl">{value}{key === "saved_hours" ? "h" : ""}</CardTitle>
@@ -88,7 +123,7 @@ export default function HomePage() {
           </section>
 
           <section className="panel-grid">
-            <Card>
+            <Card className="glass-card accent-card-blue">
               <CardHeader>
                 <CardTitle>本周重点推荐</CardTitle>
                 <CardDescription>直接进入销售判断与售前协同的候选项目</CardDescription>
@@ -124,7 +159,7 @@ export default function HomePage() {
 
             <div className="space-y-4">
               {quickPanels.map(({ key, title, icon: Icon }) => (
-                <Card key={key}>
+                <Card key={key} className="glass-card">
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-3">
                       <div className="rounded-2xl bg-primary/10 p-2 text-primary">
@@ -156,7 +191,7 @@ export default function HomePage() {
           </section>
 
           <section className="dashboard-grid">
-            <Card>
+            <Card className="glass-card accent-card-blue">
               <CardHeader>
                 <CardTitle>推荐机制</CardTitle>
                 <CardDescription>当前评分由客户匹配、能力覆盖与风险水平共同决定</CardDescription>
@@ -177,7 +212,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="glass-card accent-card-red">
               <CardHeader>
                 <CardTitle>下一步建议</CardTitle>
                 <CardDescription>把推荐直接推进到销售动作，而不是停留在列表浏览</CardDescription>
@@ -215,7 +250,7 @@ export default function HomePage() {
 
 function MessageCard({ title, description }: { title: string; description: string }) {
   return (
-    <Card className="border-rose-200 bg-rose-50/70">
+    <Card className="glass-card border-rose-200 bg-rose-50/80">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

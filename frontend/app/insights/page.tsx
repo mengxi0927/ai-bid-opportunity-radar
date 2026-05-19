@@ -35,22 +35,24 @@ export default function InsightsPage() {
 
   return (
     <Shell>
-      <section className="page-header">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Market Insights</p>
-          <h1 className="page-title">市场洞察</h1>
-          <p className="page-description">把招投标公告当作外部市场信号源，观察行业、区域、客户和能力要求的变化，而不是只把它当作线索列表。</p>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={range} onChange={(event) => setRange(event.target.value)}>
-            {ranges.map((option) => <option key={option}>{option}</option>)}
-          </select>
-          <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={industry} onChange={(event) => setIndustry(event.target.value)}>
-            {industries.map((option) => <option key={option}>{option}</option>)}
-          </select>
-          <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={region} onChange={(event) => setRegion(event.target.value)}>
-            {regions.map((option) => <option key={option}>{option}</option>)}
-          </select>
+      <section className="hero-panel px-6 py-8 sm:px-8">
+        <div className="page-header">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Market Insights</p>
+            <h1 className="page-title">市场洞察</h1>
+            <p className="page-description">把招投标公告当作外部市场信号源，观察行业、区域、客户和能力要求的变化，而不是只把它当作线索列表。</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={range} onChange={(event) => setRange(event.target.value)}>
+              {ranges.map((option) => <option key={option}>{option}</option>)}
+            </select>
+            <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={industry} onChange={(event) => setIndustry(event.target.value)}>
+              {industries.map((option) => <option key={option}>{option}</option>)}
+            </select>
+            <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={region} onChange={(event) => setRegion(event.target.value)}>
+              {regions.map((option) => <option key={option}>{option}</option>)}
+            </select>
+          </div>
         </div>
       </section>
 
@@ -64,7 +66,7 @@ export default function InsightsPage() {
         <>
           <section className="metric-grid">
             {data.metrics.map((item) => (
-              <Card key={item.label}>
+              <Card key={item.label} className="glass-card">
                 <CardHeader className="pb-3">
                   <CardDescription>{item.label}</CardDescription>
                   <CardTitle className="font-mono text-3xl">{item.value}</CardTitle>
@@ -78,7 +80,7 @@ export default function InsightsPage() {
           </section>
 
           <section className="dashboard-grid">
-            <Card>
+            <Card className="glass-card accent-card-blue">
               <CardHeader>
                 <CardTitle>AI 总结</CardTitle>
                 <CardDescription>销售、管理和能力团队分别应该关注什么</CardDescription>
@@ -90,7 +92,7 @@ export default function InsightsPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="glass-card accent-card-red">
               <CardHeader>
                 <CardTitle>数据源概况</CardTitle>
                 <CardDescription>当前筛选窗口下的真实数据范围</CardDescription>
@@ -133,7 +135,7 @@ export default function InsightsPage() {
             />
           </section>
 
-          <Card>
+          <Card className="glass-card">
             <CardHeader>
               <CardTitle>技术关键词与竞争信号</CardTitle>
               <CardDescription>用热词和结果公告观察市场方向与外部竞争动作</CardDescription>
@@ -207,7 +209,7 @@ function StatRow({ label, value }: { label: string; value: string }) {
 
 function InsightTable({ title, description, headers, rows }: { title: string; description: string; headers: string[]; rows: string[][] }) {
   return (
-    <Card>
+    <Card className="glass-card">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
