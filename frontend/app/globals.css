@@ -6,30 +6,30 @@
   :root {
     --font-sans: "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", sans-serif;
     --font-mono: "SFMono-Regular", "JetBrains Mono", "Menlo", "Monaco", monospace;
-    --background: 217 42% 97%;
-    --foreground: 226 42% 13%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 226 42% 13%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 226 42% 13%;
-    --primary: 220 84% 46%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 55%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 222 33% 95%;
-    --secondary-foreground: 226 42% 13%;
-    --muted: 221 35% 94%;
-    --muted-foreground: 220 16% 42%;
-    --accent: 218 62% 93%;
-    --accent-foreground: 226 42% 13%;
-    --destructive: 356 81% 55%;
+    --secondary: 210 24% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 42%;
+    --accent: 214 100% 97%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 221 29% 86%;
-    --input: 221 29% 86%;
-    --ring: 220 84% 46%;
-    --chart-1: 220 84% 46%;
-    --chart-2: 356 81% 55%;
-    --chart-3: 217 91% 60%;
-    --chart-4: 349 89% 64%;
-    --chart-5: 212 83% 68%;
+    --border: 214 25% 90%;
+    --input: 214 25% 90%;
+    --ring: 217 91% 55%;
+    --chart-1: 217 91% 55%;
+    --chart-2: 0 84% 60%;
+    --chart-3: 212 95% 68%;
+    --chart-4: 355 92% 70%;
+    --chart-5: 221 83% 62%;
     --radius: 1.05rem;
   }
 
@@ -44,10 +44,9 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 28%),
-      radial-gradient(circle at top right, rgba(239, 68, 68, 0.12), transparent 30%),
-      radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.08), transparent 26%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(243, 246, 255, 0.96));
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 24%),
+      radial-gradient(circle at top right, rgba(239, 68, 68, 0.05), transparent 24%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.98));
   }
 
   a {
@@ -68,9 +67,9 @@
     content: "";
     @apply absolute inset-0 opacity-90;
     background:
-      radial-gradient(circle at 12% 18%, rgba(37, 99, 235, 0.18), transparent 24%),
-      radial-gradient(circle at 88% 12%, rgba(239, 68, 68, 0.16), transparent 24%),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 255, 0.88));
+      radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.12), transparent 22%),
+      radial-gradient(circle at 86% 12%, rgba(239, 68, 68, 0.08), transparent 20%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(245, 249, 255, 0.94));
   }
 
   .hero-panel > * {
@@ -112,28 +111,28 @@
   .fancy-metric::before {
     content: "";
     @apply absolute -right-10 -top-10 h-28 w-28 rounded-full opacity-80 blur-2xl;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(239, 68, 68, 0.24));
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(248, 113, 113, 0.14));
   }
 
   .fancy-metric::after {
     content: "";
-    @apply absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-blue-500/40 via-red-400/50 to-transparent;
+    @apply absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-blue-400/35 via-slate-200 to-transparent;
   }
 
   .glass-card {
-    @apply border-white/60 bg-white/75 backdrop-blur-md shadow-2xl;
+    @apply border-white/80 bg-white/90 backdrop-blur-md shadow-2xl;
   }
 
   .accent-card-blue {
     background:
-      radial-gradient(circle at top right, rgba(96, 165, 250, 0.22), transparent 32%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(239, 246, 255, 0.92));
+      radial-gradient(circle at top right, rgba(96, 165, 250, 0.14), transparent 28%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 249, 255, 0.95));
   }
 
   .accent-card-red {
     background:
-      radial-gradient(circle at top right, rgba(248, 113, 113, 0.18), transparent 32%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 241, 242, 0.92));
+      radial-gradient(circle at top right, rgba(248, 113, 113, 0.1), transparent 26%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 247, 247, 0.95));
   }
 
   .panel-grid {

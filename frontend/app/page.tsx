@@ -56,38 +56,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <div className="fancy-metric accent-card-blue">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Signal Engine</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">客户与能力交叉判断</p>
-              </div>
-              <Target className="h-5 w-5 text-blue-600" />
-            </div>
-            <p className="mt-4 text-sm leading-6 text-slate-600">从公开公告中快速筛出真正值得销售和售前投入的项目，不再靠人工通读全文。</p>
-          </div>
-          <div className="fancy-metric accent-card-red">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Risk Lens</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">风险、预算、主体同屏呈现</p>
-              </div>
-              <ShieldAlert className="h-5 w-5 text-rose-600" />
-            </div>
-            <p className="mt-4 text-sm leading-6 text-slate-600">高风险项目先暴露关键阻塞点，让团队在决策前就知道是否值得继续推进。</p>
-          </div>
-          <div className="fancy-metric">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Action Loop</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">从洞察直接转草稿与反馈</p>
-              </div>
-              <Flame className="h-5 w-5 text-violet-600" />
-            </div>
-            <p className="mt-4 text-sm leading-6 text-slate-600">让推荐结论、AI 分析和销售动作自然连成一条流，而不是分散在多个工具里。</p>
-          </div>
-        </div>
+        
       </section>
 
       {error && <MessageCard title="无法连接后端" description={error} />}
