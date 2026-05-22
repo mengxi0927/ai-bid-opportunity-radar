@@ -6,7 +6,7 @@ import { crawlWeeklyTenders, getTenders, Tender } from "@/lib/api";
 import { Shell } from "@/components/Shell";
 import { TenderTable } from "@/components/TenderTable";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -98,84 +98,7 @@ export default function TendersPage() {
           </Button>
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <div className="fancy-metric accent-card-blue">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Priority Sweep</p>
-            <p className="mt-2 text-lg font-semibold text-slate-950">优先扫高分、高匹配项目</p>
-            <p className="mt-3 text-sm text-slate-600">用更强视觉对比帮助团队先处理最值得推进的目标。</p>
-          </div>
-          <div className="fancy-metric accent-card-red">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Risk First</p>
-            <p className="mt-2 text-lg font-semibold text-slate-950">先看红色风险，再看蓝色机会</p>
-            <p className="mt-3 text-sm text-slate-600">将阻塞项提前暴露，避免漂亮项目在后期才发现不可投。</p>
-          </div>
-          <div className="fancy-metric">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Action Ready</p>
-            <p className="mt-2 text-lg font-semibold text-slate-950">收藏、分析、转草稿形成闭环</p>
-            <p className="mt-3 text-sm text-slate-600">让视觉层级直接支持日常工作节奏，而不是只做静态列表。</p>
-          </div>
-        </div>
       </section>
-
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle>筛选与视图</CardTitle>
-          <CardDescription>将高优先级、风险待核验和收藏项目组织成固定工作流。</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="flex h-auto flex-wrap gap-2 bg-transparent p-0">
-              {tabs.map((tab) => (
-                <TabsTrigger
-                  key={tab}
-                  value={tab}
-                  className="rounded-full border border-border bg-background px-4 py-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  {tab}
-                  {tab === "我的收藏" ? ` ${favorites.length}` : ""}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-
-          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_180px_180px]">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input className="pl-9" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索项目名称或招标方" />
-            </div>
-            <select
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-              value={level}
-              onChange={(event) => setLevel(event.target.value)}
-            >
-              <option value="">全部推荐等级</option>
-              <option value="高优先级">高优先级</option>
-              <option value="中优先级">中优先级</option>
-              <option value="观察池">观察池</option>
-            </select>
-            <select
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-              value={risk}
-              onChange={(event) => setRisk(event.target.value)}
-            >
-              <option value="">全部风险等级</option>
-              <option value="低">低风险</option>
-              <option value="中">中风险</option>
-              <option value="高">高风险</option>
-            </select>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span>当前结果 {visibleItems.length} 条</span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5" /> 收藏 {favorites.length} 条</span>
-            {syncMessage && <>
-              <span>•</span>
-              <span>{syncMessage}</span>
-            </>}
-          </div>
-        </CardContent>
-      </Card>
 
       {error ? (
         <Card className="glass-card border-rose-200 bg-rose-50/80">
@@ -188,6 +111,61 @@ export default function TendersPage() {
           onToggleFavorite={toggleFavorite}
           title="推荐项目列表"
           description="点击任意项目进入情报详情页，查看客户、能力、风险和下一步建议。"
+          toolbar={
+            <div className="space-y-4">
+              <Tabs value={activeTab} onValueChange={handleTabChange}>
+                <TabsList className="flex h-auto flex-wrap gap-2 bg-transparent p-0">
+                  {tabs.map((tab) => (
+                    <TabsTrigger
+                      key={tab}
+                      value={tab}
+                      className="rounded-full border border-border bg-background px-4 py-2 data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    >
+                      {tab}
+                      {tab === "我的收藏" ? ` ${favorites.length}` : ""}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_180px_180px]">
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input className="pl-9" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索项目名称或招标方" />
+                </div>
+                <select
+                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  value={level}
+                  onChange={(event) => setLevel(event.target.value)}
+                >
+                  <option value="">全部推荐等级</option>
+                  <option value="高优先级">高优先级</option>
+                  <option value="中优先级">中优先级</option>
+                  <option value="观察池">观察池</option>
+                </select>
+                <select
+                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  value={risk}
+                  onChange={(event) => setRisk(event.target.value)}
+                >
+                  <option value="">全部风险等级</option>
+                  <option value="低">低风险</option>
+                  <option value="中">中风险</option>
+                  <option value="高">高风险</option>
+                </select>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <span>当前结果 {visibleItems.length} 条</span>
+                <span>•</span>
+                <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5" /> 收藏 {favorites.length} 条</span>
+                {syncMessage && <>
+                  <span>•</span>
+                  <span>{syncMessage}</span>
+                </>}
+              </div>
+            </div>
+          }
         />
       )}
     </Shell>

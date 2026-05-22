@@ -5,7 +5,6 @@ import { getMarketInsights, MarketInsights } from "@/lib/api";
 import { Shell } from "@/components/Shell";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const ranges = ["今日", "近7天", "本月", "近30天"];
 const industries = ["全部", "政企", "金融", "教育", "医疗", "能源", "制造"];
@@ -64,167 +63,296 @@ export default function InsightsPage() {
 
       {data && (
         <>
-          <section className="market-metric-grid">
-            {data.metrics.map((item) => (
-              <Card key={item.label} className="glass-card">
-                <CardHeader className="pb-3">
-                  <CardDescription>{item.label}</CardDescription>
-                  <CardTitle className="font-mono text-3xl">{item.value}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex items-center justify-between pt-0 text-sm">
-                  <span className="text-muted-foreground">{item.note}</span>
-                  <Badge variant={item.change.startsWith("-") ? "warning" : "success"}>{item.change}</Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </section>
+          <AiSummaryStrip data={data} />
 
-          <section className="insights-overview-grid">
-            <Card className="glass-card accent-card-blue insights-summary-card">
-              <CardHeader>
-                <CardTitle>AI 总结</CardTitle>
-                <CardDescription>销售、管理和能力团队分别应该关注什么</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <SummaryBlock title="销售团队" items={data.summary.sales} />
-                <SummaryBlock title="管理层" items={data.summary.management} />
-                <SummaryBlock title="能力建设" items={data.summary.capability} />
-              </CardContent>
-            </Card>
-
-            <Card className="glass-card accent-card-red insights-source-card">
-              <CardHeader>
-                <CardTitle>数据源概况</CardTitle>
-                <CardDescription>当前筛选窗口下的真实数据范围</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <StatRow label="总导入标讯" value={`${data.data_source.total_imported} 条`} />
-                <StatRow label="本次命中数量" value={`${data.data_source.filtered_total} 条`} />
-                <StatRow label="最新公告日期" value={data.data_source.latest_date} />
-                <div className="rounded-xl border border-border/70 bg-muted/20 p-4 text-muted-foreground">
-                  当前筛选：{data.filters.range} · {data.filters.industry}行业 · {data.filters.region}区域
-                </div>
-              </CardContent>
-            </Card>
+          <section className="insights-module-grid">
+            <RegionRadarCard rows={data.regions} />
+            <KeywordHeatCard keywords={data.keywords} />
           </section>
 
           <section className="insights-module-grid">
-            <InsightTable
-              className="insights-module-wide"
-              title="行业趋势"
-              description="近期哪些方向更值得持续盯住"
-              headers={["行业", "公告数", "变化", "关键词", "建议"]}
-              rows={data.industry_trends.map((row) => [row.industry, `${row.notice_count}`, row.change, row.keywords, row.suggestion])}
-            />
-            <RegionRadarCard rows={data.regions} />
-            <InsightTable
-              className="insights-module-half"
-              title="客户动态"
-              description="值得销售补充关系背景的客户线索"
-              headers={["客户", "类型", "公告数", "方向", "最近公告", "建议动作"]}
-              rows={data.customer_dynamics.map((row) => [row.customer_name, row.customer_type, `${row.notice_count}`, row.directions, row.latest_published_at, row.suggested_action])}
-            />
-            <InsightTable
-              className="insights-module-half"
-              title="能力要求"
-              description="市场需求与公司资质覆盖情况"
-              headers={["要求名称", "出现次数", "状态", "法人体", "建议动作"]}
-              rows={data.capabilities.map((row) => [row.name, `${row.count}`, row.status, row.entity, row.action])}
-            />
+            <IndustryTrendChart rows={data.industry_trends} />
           </section>
 
-          <KeywordCompetitionPanel keywords={data.keywords} competitors={data.competitors} />
+          <section className="insights-module-grid">
+            <CustomerDynamicsPanel rows={data.customer_dynamics} />
+            <CapabilityCoveragePanel rows={data.capabilities} />
+          </section>
+
+          <CompetitionSignalCard competitors={data.competitors} />
         </>
       )}
     </Shell>
   );
 }
 
-function SummaryBlock({ title, items }: { title: string; items: string[] }) {
+function AiSummaryStrip({ data }: { data: MarketInsights }) {
+  const topRegion = data.regions[0];
+  const topIndustry = data.industry_trends[0];
+  const capabilityGap = data.capabilities.find((item) => item.status !== "已覆盖");
+  const competitor = data.competitors[0];
+  const keywords = topIndustry?.keywords?.split(/[、/]/).filter(Boolean).slice(0, 2).join("、") || "重点关键词";
+  const summaries = [
+    {
+      title: "销售重点",
+      badge: "先跟进",
+      text: topRegion ? `${topRegion.region}机会最集中，优先看高分、已有客户和重点客户项目。` : "优先跟进高分、已有客户和重点客户项目。"
+    },
+    {
+      title: "市场趋势",
+      badge: "看行业",
+      text: topIndustry ? `${topIndustry.industry}最活跃，需求集中在${keywords}。` : "关注公告数量上升最快的行业和关键词。"
+    },
+    {
+      title: "能力补齐",
+      badge: capabilityGap ? "需确认" : "覆盖稳定",
+      text: capabilityGap ? `${capabilityGap.name}仍需确认覆盖，先补主体、案例或材料。` : "当前能力覆盖稳定，继续维护资质和案例有效期。"
+    },
+    {
+      title: "竞争提醒",
+      badge: competitor ? "有动作" : "暂无异常",
+      text: competitor ? `${competitor.company}近期有中标动作，涉及已有客户的项目先提醒负责人。` : "暂未发现明显竞争动作，保持监控。"
+    }
+  ];
+
   return (
-    <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
-      <p className="font-medium text-slate-950">{title}</p>
-      <div className="mt-3 space-y-2">
-        {items.map((item) => <div className="text-sm leading-7 text-muted-foreground" key={item}>{item}</div>)}
-      </div>
-    </div>
+    <Card className="glass-card accent-card-blue ai-summary-strip">
+      <CardHeader>
+        <CardTitle>AI 总结</CardTitle>
+        <CardDescription>直接给结论，详细依据见下方区域、行业、能力和竞争模块。</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="ai-summary-grid">
+          {summaries.map((item) => (
+            <div className="ai-summary-tile" key={item.title}>
+              <div className="flex items-center justify-between gap-3">
+                <strong>{item.title}</strong>
+                <Badge variant="info">{item.badge}</Badge>
+              </div>
+              <p>{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
-function StatRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-border/70 bg-muted/20 p-4">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-slate-950">{value}</span>
-    </div>
-  );
-}
-
-function KeywordCompetitionPanel({
-  keywords,
-  competitors
-}: {
-  keywords: MarketInsights["keywords"];
-  competitors: MarketInsights["competitors"];
-}) {
+function KeywordHeatCard({ keywords }: { keywords: MarketInsights["keywords"] }) {
   const maxKeywordCount = Math.max(1, ...keywords.map((item) => item.count));
   const topKeywords = keywords.slice(0, 8);
 
   return (
-    <section className="keyword-competition-panel">
-      <Card className="glass-card keyword-card">
-        <CardHeader>
-          <CardTitle>技术关键词热度</CardTitle>
-          <CardDescription>识别近期需求里被反复提及的技术方向</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="keyword-leader">
-            <span>最高频</span>
-            <strong>{topKeywords[0]?.label || "暂无"}</strong>
-            <em>{topKeywords[0]?.count || 0} 次</em>
-          </div>
-          <div className="keyword-bars">
-            {topKeywords.map((item, index) => (
-              <div className="keyword-bar-row" key={item.label}>
-                <span>{index + 1}</span>
-                <strong>{item.label}</strong>
-                <div><i style={{ width: `${Math.max(6, (item.count / maxKeywordCount) * 100)}%` }} /></div>
-                <em>{item.count}次</em>
-                <small className={item.change.startsWith("-") ? "down" : "up"}>{item.change}</small>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+    <Card className="glass-card keyword-card insights-keyword-card">
+      <CardHeader>
+        <CardTitle>技术关键词热度</CardTitle>
+        <CardDescription>识别近期需求里被反复提及的技术方向</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="keyword-leader">
+          <span>最高频</span>
+          <strong>{topKeywords[0]?.label || "暂无"}</strong>
+          <em>{topKeywords[0]?.count || 0} 次</em>
+        </div>
+        <div className="keyword-bars">
+          {topKeywords.map((item, index) => (
+            <div className="keyword-bar-row" key={item.label}>
+              <span>{index + 1}</span>
+              <strong>{item.label}</strong>
+              <div><i style={{ width: `${Math.max(6, (item.count / maxKeywordCount) * 100)}%` }} /></div>
+              <em>{item.count}次</em>
+              <small className={item.change.startsWith("-") ? "down" : "up"}>{item.change}</small>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-      <Card className="glass-card competition-card">
-        <CardHeader>
-          <CardTitle>竞争信号</CardTitle>
-          <CardDescription>从中标、成交和结果公告中观察外部动作</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="competition-list">
-            {competitors.length ? competitors.slice(0, 6).map((row, rowIndex) => (
-              <div className="competition-item" key={`${rowIndex}-${row.company}`}>
+function CompetitionSignalCard({ competitors }: { competitors: MarketInsights["competitors"] }) {
+  const topCompetitors = competitors.slice(0, 6);
+  const totalWins = competitors.reduce((sum, row) => sum + row.wins, 0);
+  const existingCustomerCount = competitors.filter((row) => row.existing_customer === "是").length;
+  const topCompetitor = topCompetitors[0];
+  const industries = Array.from(new Set(competitors.map((row) => row.industry).filter(Boolean))).slice(0, 3);
+
+  return (
+    <Card className="glass-card competition-card">
+      <CardHeader>
+        <CardTitle>竞争信号</CardTitle>
+        <CardDescription>从中标、成交和结果公告中观察外部动作</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {competitors.length ? (
+          <div className="competition-dashboard">
+            <div className="competition-brief">
+              <div>
+                <span>主要竞争动作</span>
+                <strong>{topCompetitor?.company || "暂无"}</strong>
+                <p>{topCompetitor ? `${topCompetitor.industry} · ${topCompetitor.capability}，近期 ${topCompetitor.wins} 次中标/成交信号。` : "当前筛选条件下暂无竞争动作。"}</p>
+              </div>
+              <div className="competition-stats">
                 <div>
-                  <strong>{row.company}</strong>
-                  <span>{row.industry} · {row.capability}</span>
+                  <strong>{totalWins}</strong>
+                  <span>中标/成交信号</span>
                 </div>
-                <div className="competition-meta">
-                  <Badge variant={row.existing_customer === "是" ? "warning" : "outline"}>{row.existing_customer === "是" ? "涉及已有客户" : "非已有客户"}</Badge>
-                  <em>{row.wins} 次</em>
+                <div>
+                  <strong>{existingCustomerCount}</strong>
+                  <span>涉及已有客户</span>
                 </div>
-                <p>{row.action}</p>
+                <div>
+                  <strong>{industries.length}</strong>
+                  <span>活跃行业</span>
+                </div>
               </div>
-            )) : (
-              <div className="rounded-xl border border-border/70 bg-muted/20 p-5 text-center text-sm text-muted-foreground">
-                当前筛选条件下暂无竞争信号。
-              </div>
-            )}
+            </div>
+
+            <div className="competition-list">
+              {topCompetitors.map((row, rowIndex) => (
+                <div className="competition-item" key={`${rowIndex}-${row.company}`}>
+                  <div className="competition-item-head">
+                    <div>
+                      <strong>{row.company}</strong>
+                      <span>{row.industry} · {row.capability}</span>
+                    </div>
+                    <em>{row.wins} 次</em>
+                  </div>
+                  <div className="competition-meta">
+                    <Badge variant={row.existing_customer === "是" ? "warning" : "outline"}>{row.existing_customer === "是" ? "涉及已有客户" : "非已有客户"}</Badge>
+                    <small>{row.action}</small>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    </section>
+        ) : (
+            <div className="rounded-xl border border-border/70 bg-muted/20 p-5 text-center text-sm text-muted-foreground">
+              当前筛选条件下暂无竞争信号。
+            </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function IndustryTrendChart({ rows }: { rows: MarketInsights["industry_trends"] }) {
+  const max = Math.max(1, ...rows.map((row) => row.notice_count));
+  const total = rows.reduce((sum, row) => sum + row.notice_count, 0);
+
+  return (
+    <Card className="glass-card insights-module-full industry-visual-card">
+      <CardHeader>
+        <CardTitle>行业趋势</CardTitle>
+        <CardDescription>用公告量和关键词集中度判断哪些行业更值得盯住</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="industry-visual-layout">
+          <div className="industry-rank-list">
+            {rows.map((row, index) => {
+              const width = Math.max(8, (row.notice_count / max) * 100);
+              const share = total ? Math.round((row.notice_count / total) * 100) : 0;
+              return (
+                <div className="industry-rank-item" key={row.industry}>
+                  <div className="industry-rank-head">
+                    <span>{index + 1}</span>
+                    <strong>{row.industry}</strong>
+                    <em>{row.notice_count} 条</em>
+                  </div>
+                  <div className="industry-rank-track">
+                    <i style={{ width: `${width}%` }} />
+                  </div>
+                  <div className="industry-rank-meta">
+                    <small>占比 {share}%</small>
+                    <small>{row.suggestion}</small>
+                    <small>{row.keywords}</small>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="industry-focus-box">
+            <span>当前最活跃</span>
+            <strong>{rows[0]?.industry || "暂无"}</strong>
+            <p>{rows[0] ? `${rows[0].notice_count} 条公告，关键词集中在 ${rows[0].keywords}。` : "当前筛选条件下暂无行业信号。"}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CustomerDynamicsPanel({ rows }: { rows: MarketInsights["customer_dynamics"] }) {
+  const topRows = rows.slice(0, 5);
+  const max = Math.max(1, ...topRows.map((row) => row.notice_count));
+
+  return (
+    <Card className="glass-card insights-module-half customer-visual-card">
+      <CardHeader>
+        <CardTitle>客户动态</CardTitle>
+        <CardDescription>优先识别近期需求更活跃的客户</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="customer-signal-list">
+          {topRows.length ? topRows.map((row) => (
+            <div className="customer-signal-card" key={`${row.customer_name}-${row.latest_published_at}`}>
+              <div className="customer-signal-main">
+                <strong>{row.customer_name}</strong>
+                <Badge variant={row.customer_type === "已有客户" ? "success" : row.customer_type === "重点客户" ? "warning" : "outline"}>{row.customer_type}</Badge>
+              </div>
+              <div className="customer-signal-track">
+                <i style={{ width: `${Math.max(10, (row.notice_count / max) * 100)}%` }} />
+              </div>
+              <div className="customer-signal-meta">
+                <span>{row.notice_count} 条公告</span>
+                <span>{row.directions}</span>
+                <span>{row.suggested_action}</span>
+              </div>
+            </div>
+          )) : (
+            <div className="empty-visual">当前筛选条件下暂无客户动态。</div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CapabilityCoveragePanel({ rows }: { rows: MarketInsights["capabilities"] }) {
+  const statusVariant = (status: string) => {
+    if (status === "已覆盖") return "success" as const;
+    if (status === "部分覆盖") return "warning" as const;
+    return "danger" as const;
+  };
+  const statusClass = (status: string) => {
+    if (status === "已覆盖") return "covered";
+    if (status === "部分覆盖") return "partial";
+    return "missing";
+  };
+
+  return (
+    <Card className="glass-card insights-module-half capability-visual-card">
+      <CardHeader>
+        <CardTitle>能力要求</CardTitle>
+        <CardDescription>把市场高频要求转成能力覆盖看板</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="capability-chip-grid">
+          {rows.length ? rows.map((row) => (
+            <div className={`capability-chip ${statusClass(row.status)}`} key={row.name}>
+              <div>
+                <strong>{row.name}</strong>
+                <span>{row.count} 次出现 · {row.entity}</span>
+              </div>
+              <Badge variant={statusVariant(row.status)}>{row.status}</Badge>
+              <p>{row.action}</p>
+            </div>
+          )) : (
+            <div className="empty-visual">当前筛选条件下暂无能力要求。</div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -297,39 +425,6 @@ function RegionRadarCard({ rows }: { rows: MarketInsights["regions"] }) {
               </div>
             ))}
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function InsightTable({ title, description, headers, rows, className = "" }: { title: string; description: string; headers: string[]; rows: string[][]; className?: string }) {
-  return (
-    <Card className={`glass-card ${className}`}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="insight-table-scroll">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                {headers.map((header) => <TableHead key={header}>{header}</TableHead>)}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.length ? rows.map((row, rowIndex) => (
-                <TableRow key={`${rowIndex}-${row.join("-")}`}>
-                  {row.map((cell, index) => <TableCell key={`${rowIndex}-${cell}-${index}`} className={index === 0 ? "font-medium" : ""}>{cell}</TableCell>)}
-                </TableRow>
-              )) : (
-                <TableRow>
-                  <TableCell colSpan={headers.length} className="text-center text-muted-foreground">当前筛选条件下暂无数据。</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
         </div>
       </CardContent>
     </Card>

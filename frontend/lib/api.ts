@@ -175,6 +175,59 @@ export type Draft = {
   owner: string;
 };
 
+export type RiskBasicInfo = {
+  companyName: string;
+  creditCode: string;
+  legalRepresentative: string;
+  establishedDate: string;
+  registeredCapital: string;
+  registrationStatus: string;
+  industry: string;
+  businessScopeSummary: string;
+};
+
+export type RiskItem = {
+  name: string;
+  level: string;
+  hit: boolean;
+  summary: string;
+};
+
+export type RiskDetail = {
+  basicInfo: RiskBasicInfo;
+  riskScore: number;
+  riskLevel: string;
+  riskTags: string[];
+  riskReasons: string[];
+  riskItems: RiskItem[];
+  suggestion: string;
+};
+
+export type RiskCustomer = {
+  id: string;
+  companyName: string;
+  tenderTitle: string;
+  tenderPriority: string;
+  isExistingCustomer: boolean;
+  scanStatus: "pending" | "scanning" | "scanned" | "failed";
+  riskLevel: string;
+  riskScore: number;
+  riskTags: string[];
+  lastScanTime: string;
+  detail: RiskDetail | null;
+};
+
+export type RiskCustomersResponse = {
+  items: RiskCustomer[];
+  summary: {
+    identifiedCustomers: number;
+    completedScans: number;
+    highRiskCustomers: number;
+    remainingFreeCalls: number;
+    qccConfigured: boolean;
+  };
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...init,
@@ -196,6 +249,17 @@ export function getOverview() {
 
 export function getMarketInsights(search = "") {
   return request<MarketInsights>(`/insights${search}`);
+}
+
+export function getRiskCustomers() {
+  return request<RiskCustomersResponse>("/risk/customers");
+}
+
+export function scanCustomerRisk(companyName: string) {
+  return request<{ item: RiskCustomer; remainingFreeCalls: number; cached: boolean }>("/risk/scan", {
+    method: "POST",
+    body: JSON.stringify({ companyName })
+  });
 }
 
 export function getTenders(search = "") {

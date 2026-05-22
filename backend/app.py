@@ -14,6 +14,7 @@ from services.company_capabilities import capability_context_for_qwen, stats_sum
 from services.opportunity_history import opportunity_context_for_qwen, stats_summary as opportunity_stats_summary
 from services.qwen import QwenAnalysisError, analyze_tender_with_qwen, qwen_configured
 from services.market_insights import build_market_insights
+from services.qcc import QccScanError, list_risk_customers, scan_company
 from services.radar import create_draft, get_tender, list_tenders, overview
 
 
@@ -84,6 +85,25 @@ def api_market_insights():
         "region": request.args.get("region", "全部"),
     }
     return jsonify(build_market_insights(IMPORTED_TENDERS, filters))
+
+
+@app.route("/api/risk/customers")
+def api_risk_customers():
+    return jsonify(list_risk_customers())
+
+
+@app.route("/api/risk/scan", methods=["POST", "OPTIONS"])
+def api_risk_scan():
+    if request.method == "OPTIONS":
+        return "", 204
+    payload = request.get_json(silent=True) or {}
+    company_name = payload.get("companyName", "").strip()
+    if not company_name:
+        return jsonify({"message": "请提供客户公司名称。"}), 400
+    try:
+        return jsonify(scan_company(company_name))
+    except QccScanError as exc:
+        return jsonify({"message": str(exc)}), 422
 
 
 @app.route("/api/tenders/<tender_id>")

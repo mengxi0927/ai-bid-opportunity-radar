@@ -1,7 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, Flame, ShieldAlert, Sparkles, Target } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BriefcaseBusiness,
+  FileCheck2,
+  ShieldAlert,
+  Sparkles,
+  Star,
+  Users
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { getOverview, MetricDetail, Overview } from "@/lib/api";
 import { Shell } from "@/components/Shell";
@@ -21,13 +31,26 @@ const metricLabels: Record<string, string> = {
   draftable: "可生成草稿"
 };
 
-const quickPanels = [
-  { key: "high_priority", title: "优先推进队列", icon: Target },
-  { key: "risk_alerts", title: "风险待核验", icon: ShieldAlert },
-  { key: "draftable", title: "可直接转草稿", icon: BriefcaseBusiness }
-] as const;
+const visibleMetricKeys = [
+  "ai_relevant",
+  "capability_matched",
+  "draftable",
+  "existing_customers",
+  "high_priority",
+  "risk_alerts"
+];
+
+const metricMeta: Record<string, { note: string; tone: string; icon: typeof Sparkles }> = {
+  ai_relevant: { note: "命中行业、客户或能力要求", tone: "blue", icon: Sparkles },
+  capability_matched: { note: "公司资质与项目要求相符", tone: "emerald", icon: BadgeCheck },
+  draftable: { note: "可进入线索或草稿准备", tone: "violet", icon: FileCheck2 },
+  existing_customers: { note: "存量客户近期采购动态", tone: "sky", icon: Users },
+  high_priority: { note: "建议优先分配销售跟进", tone: "amber", icon: Star },
+  risk_alerts: { note: "推进前需要人工核验", tone: "rose", icon: ShieldAlert }
+};
 
 export default function HomePage() {
+  const router = useRouter();
   const [data, setData] = useState<Overview | null>(null);
   const [error, setError] = useState("");
 
@@ -37,26 +60,25 @@ export default function HomePage() {
 
   return (
     <Shell>
-      <section className="hero-panel px-6 py-8 sm:px-8">
-        <div className="page-header">
+      <div className="home-dashboard">
+      <section className="home-hero-panel">
+        <div className="home-hero-header">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Overview</p>
-            <h1 className="page-title">本周商机雷达概览</h1>
-            <p className="page-description">
+            <p className="home-eyebrow">Overview</p>
+            <h1 className="home-title">本周商机雷达概览</h1>
+            <p className="home-description">
               将公开标讯转成可执行的销售情报，优先显示高价值项目、客户关联、能力覆盖与风险判断。
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild>
+          <div className="home-hero-actions">
+            <Button asChild className="home-primary-button">
               <Link href="/tenders?level=高优先级">查看高优先级项目</Link>
             </Button>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="home-secondary-button">
               <Link href="/tenders">进入标讯工作台</Link>
             </Button>
           </div>
         </div>
-
-        
       </section>
 
       {error && <MessageCard title="无法连接后端" description={error} />}
@@ -76,29 +98,38 @@ export default function HomePage() {
       )}
 
       {data && data.metrics.scanned > 0 && (
-        <>
-          <section className="metric-grid">
-            {Object.entries(data.metrics).map(([key, value]) => (
-              <Card key={key} className="glass-card">
-                <CardHeader className="pb-3">
-                  <CardDescription>{metricLabels[key] || key}</CardDescription>
-                  <CardTitle className="font-mono text-3xl">{value}{key === "saved_hours" ? "h" : ""}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 text-sm text-muted-foreground">
-                  {data.metric_details?.[key]?.length || 0} 条关联明细
+        <div className="home-dashboard-stack">
+          <section className="overview-metric-grid">
+            {visibleMetricKeys.map((key) => {
+              const value = data.metrics[key] || 0;
+              const meta = metricMeta[key] || metricMeta.ai_relevant;
+              const Icon = meta.icon;
+              return (
+              <Card key={key} className={`overview-metric-card tone-${meta.tone}`}>
+                <CardContent>
+                  <div className="overview-metric-topline">
+                    <span>{metricLabels[key] || key}</span>
+                    <div className="overview-metric-icon">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                  </div>
+                  <strong>{value}</strong>
+                  <p>{meta.note}</p>
+                  <small>{data.metric_details?.[key]?.length || 0} 条关联明细</small>
                 </CardContent>
               </Card>
-            ))}
+              );
+            })}
           </section>
 
-          <section className="panel-grid">
-            <Card className="glass-card accent-card-blue">
+          <section className="overview-primary-grid">
+            <Card className="overview-focus-card overview-recommend-card">
               <CardHeader>
                 <CardTitle>本周重点推荐</CardTitle>
                 <CardDescription>直接进入销售判断与售前协同的候选项目</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
+                <Table className="overview-recommend-table">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
                       <TableHead>项目</TableHead>
@@ -108,11 +139,19 @@ export default function HomePage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.top_recommendations.map((item) => (
-                      <TableRow key={item.id}>
+                    {data.top_recommendations.slice(0, 3).map((item) => (
+                      <TableRow
+                        className="cursor-pointer"
+                        key={item.id}
+                        onClick={() => router.push(`/tenders/${item.id}`)}
+                        tabIndex={0}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") router.push(`/tenders/${item.id}`);
+                        }}
+                      >
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="font-medium">{item.title}</div>
+                            <div className="line-clamp-2 font-semibold text-slate-950">{item.title}</div>
                             <div className="text-xs text-muted-foreground">{item.buyer}</div>
                           </div>
                         </TableCell>
@@ -126,62 +165,37 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <div className="space-y-4">
-              {quickPanels.map(({ key, title, icon: Icon }) => (
-                <Card key={key} className="glass-card">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-2xl bg-primary/10 p-2 text-primary">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <CardTitle>{title}</CardTitle>
-                        <CardDescription>{metricLabels[key]}</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {(data.metric_details[key] || []).slice(0, 3).map((row: MetricDetail) => (
-                      <div className="rounded-xl border border-border/70 bg-muted/20 p-3" key={row.id}>
-                        <div className="text-sm font-medium">{row.title}</div>
-                        <div className="mt-1 text-xs text-muted-foreground">{row.note}</div>
-                      </div>
-                    ))}
-                    <Button asChild variant="ghost" className="w-full justify-between">
-                      <Link href={`/tenders${key === "high_priority" ? "?level=高优先级" : ""}`}>
-                        查看明细
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section className="dashboard-grid">
-            <Card className="glass-card accent-card-blue">
-              <CardHeader>
-                <CardTitle>推荐机制</CardTitle>
-                <CardDescription>当前评分由客户匹配、能力覆盖与风险水平共同决定</CardDescription>
+            <Card className="overview-focus-card overview-risk-card">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="overview-risk-icon">
+                    <ShieldAlert className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <CardTitle>风险待核验</CardTitle>
+                    <CardDescription>先看可能卡住推进的风险点</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
-                  <p className="font-medium text-foreground">客户关系</p>
-                  <p className="mt-1">结合历史商机与客户库判断是否存在真实转化基础。</p>
-                </div>
-                <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
-                  <p className="font-medium text-foreground">公司能力</p>
-                  <p className="mt-1">用资质、软著、案例、法人体主体和要求关键词进行匹配。</p>
-                </div>
-                <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
-                  <p className="font-medium text-foreground">风险判断</p>
-                  <p className="mt-1">从预算、回款、可行性和单一来源等维度做风险修正。</p>
-                </div>
+              <CardContent className="space-y-3">
+                {(data.metric_details.risk_alerts || []).slice(0, 4).map((row: MetricDetail) => (
+                  <div className="risk-brief" key={row.id}>
+                    <strong>{riskSummary(row)}</strong>
+                    <span>{row.title}</span>
+                  </div>
+                ))}
+                <Button asChild variant="ghost" className="w-full justify-between">
+                  <Link href="/tenders">
+                    查看风险项目
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
+          </section>
 
-            <Card className="glass-card accent-card-red">
+          <section className="overview-action-grid">
+            <Card className="overview-action-card">
               <CardHeader>
                 <CardTitle>下一步建议</CardTitle>
                 <CardDescription>把推荐直接推进到销售动作，而不是停留在列表浏览</CardDescription>
@@ -210,11 +224,50 @@ export default function HomePage() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="overview-action-card">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                    <BriefcaseBusiness className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <CardTitle>可直接转草稿</CardTitle>
+                    <CardDescription>{metricLabels.draftable}</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {(data.metric_details.draftable || []).slice(0, 3).map((row: MetricDetail) => (
+                  <div className="rounded-xl border border-border/70 bg-muted/20 p-3" key={row.id}>
+                    <div className="line-clamp-1 text-sm font-medium">{row.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{row.score} 分 · {row.customer_status}</div>
+                  </div>
+                ))}
+                <Button asChild variant="ghost" className="w-full justify-between">
+                  <Link href="/tenders">
+                    查看可转草稿项目
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
           </section>
-        </>
+        </div>
       )}
+      </div>
     </Shell>
   );
+}
+
+function riskSummary(row: MetricDetail) {
+  const text = `${row.note} ${row.title}`;
+  if (text.includes("预算")) return "预算未明，需先核实";
+  if (text.includes("技术") || text.includes("资格") || text.includes("资质")) return "资格/技术要求需确认";
+  if (text.includes("回款")) return "回款风险需核验";
+  if (text.includes("单一来源")) return "单一来源，投入需谨慎";
+  if (text.includes("异常")) return "公开风险需复核";
+  return "推进前需人工复核";
 }
 
 function MessageCard({ title, description }: { title: string; description: string }) {

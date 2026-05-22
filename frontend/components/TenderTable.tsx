@@ -13,13 +13,15 @@ export function TenderTable({
   favorites = [],
   onToggleFavorite,
   title = "推荐列表",
-  description = "按综合评分、客户关系、能力匹配和风险水平排序"
+  description = "按综合评分、客户关系、能力匹配和风险水平排序",
+  toolbar
 }: {
   items: Tender[];
   favorites?: string[];
   onToggleFavorite?: (id: string) => void;
   title?: string;
   description?: string;
+  toolbar?: React.ReactNode;
 }) {
   const router = useRouter();
 
@@ -37,16 +39,17 @@ export function TenderTable({
       <CardHeader className="border-b border-border/70 pb-4">
         <CardTitle>{title}</CardTitle>
         <p className="text-sm text-muted-foreground">{description}</p>
+        {toolbar && <div className="pt-4">{toolbar}</div>}
       </CardHeader>
       <CardContent className="p-0">
-        <Table>
+        <Table className="tender-detail-table">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>项目与时间</TableHead>
               <TableHead>招标方</TableHead>
-              <TableHead>推荐</TableHead>
-              <TableHead>客户/能力</TableHead>
-              <TableHead>风险</TableHead>
+              <TableHead className="whitespace-nowrap">推荐</TableHead>
+              <TableHead className="whitespace-nowrap">客户/能力</TableHead>
+              <TableHead className="whitespace-nowrap">风险</TableHead>
               <TableHead className="text-right">评分</TableHead>
               <TableHead className="text-right">收藏</TableHead>
             </TableRow>
@@ -74,20 +77,20 @@ export function TenderTable({
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-slate-700">{item.buyer}</TableCell>
-                  <TableCell><StatusPill label={item.recommendation_level} /></TableCell>
+                  <TableCell className="whitespace-nowrap"><StatusPill label={item.recommendation_level} /></TableCell>
                   <TableCell>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">客户</span>
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                      <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span className="text-xs text-muted-foreground">客户</span>
                         <StatusPill label={item.customer_match.status} />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">能力</span>
+                      <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span className="text-xs text-muted-foreground">能力</span>
                         <StatusPill label={item.capability_match.status} />
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell><StatusPill label={item.risk.level} /></TableCell>
+                  <TableCell className="whitespace-nowrap"><StatusPill label={item.risk.level} /></TableCell>
                   <TableCell className="text-right">
                     <div className="font-mono text-lg font-semibold text-slate-950">{item.score}</div>
                   </TableCell>

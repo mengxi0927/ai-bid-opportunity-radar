@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Building2, Compass, LayoutDashboard, Sparkles } from "lucide-react";
+import { BarChart3, Building2, Compass, LayoutDashboard, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -10,7 +10,8 @@ const navigation = [
   { href: "/", label: "概览", icon: LayoutDashboard },
   { href: "/tenders", label: "标讯雷达", icon: Compass },
   { href: "/value", label: "价值看板", icon: BarChart3 },
-  { href: "/insights", label: "市场洞察", icon: Building2 }
+  { href: "/insights", label: "市场洞察", icon: Building2 },
+  { href: "/risk-monitor", label: "客户风险监测", icon: ShieldCheck }
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {

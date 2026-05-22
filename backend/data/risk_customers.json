@@ -1,0 +1,420 @@
+[
+  {
+    "id": "risk-001",
+    "companyName": "北京大学",
+    "tenderTitle": "北京大学第六医院诊疗能力提升项目-无人值守发药机补药结构升级以嵌入药品追溯码采集设备项目公开招标公告",
+    "tenderPriority": "高",
+    "isExistingCustomer": true,
+    "scanStatus": "scanned",
+    "riskLevel": "低风险",
+    "riskScore": 18,
+    "riskTags": [
+      "登记状态正常",
+      "未见重大经营异常"
+    ],
+    "lastScanTime": "2026-05-21 09:20",
+    "detail": {
+      "basicInfo": {
+        "companyName": "北京大学",
+        "creditCode": "12100000400009132U",
+        "legalRepresentative": "龚旗煌",
+        "establishedDate": "1898-07-03",
+        "registeredCapital": "待公开确认",
+        "registrationStatus": "正常",
+        "industry": "教育",
+        "businessScopeSummary": "高等教育、科学研究、医疗与公共服务相关活动。"
+      },
+      "riskScore": 18,
+      "riskLevel": "低风险",
+      "riskTags": [
+        "登记状态正常",
+        "信用基础较好"
+      ],
+      "riskReasons": [
+        "未命中失信、严重违法或经营异常等高风险项。"
+      ],
+      "riskItems": [
+        {
+          "name": "工商状态风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "登记状态正常。"
+        },
+        {
+          "name": "司法/执行风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显执行风险。"
+        },
+        {
+          "name": "行政处罚风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中重大处罚。"
+        },
+        {
+          "name": "经营异常风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中经营异常。"
+        },
+        {
+          "name": "税务/信用风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显税务信用风险。"
+        },
+        {
+          "name": "股权/抵押/清算风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现清算、破产或重大冻结风险。"
+        }
+      ],
+      "suggestion": "可正常跟进"
+    }
+  },
+  {
+    "id": "risk-002",
+    "companyName": "常德烟机配件经销服务有限责任公司",
+    "tenderTitle": "常德烟机配件经销服务有限责任公司卷接设备水松纸机械喷胶装置及配套采购项目澄清及更正公告（一）",
+    "tenderPriority": "高",
+    "isExistingCustomer": false,
+    "scanStatus": "scanned",
+    "riskLevel": "中风险",
+    "riskScore": 46,
+    "riskTags": [
+      "行政处罚记录",
+      "需确认回款风险"
+    ],
+    "lastScanTime": "2026-05-21 09:24",
+    "detail": {
+      "basicInfo": {
+        "companyName": "常德烟机配件经销服务有限责任公司",
+        "creditCode": "914307007225000000",
+        "legalRepresentative": "待确认",
+        "establishedDate": "2000-06-12",
+        "registeredCapital": "1,000 万元",
+        "registrationStatus": "存续",
+        "industry": "制造/设备服务",
+        "businessScopeSummary": "烟草机械配件、设备维护、机械喷胶装置及相关配套服务。"
+      },
+      "riskScore": 46,
+      "riskLevel": "中风险",
+      "riskTags": [
+        "行政处罚记录",
+        "被执行人历史记录"
+      ],
+      "riskReasons": [
+        "命中 2 项风险：行政处罚记录、历史被执行记录，因此判定为中风险。"
+      ],
+      "riskItems": [
+        {
+          "name": "工商状态风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "登记状态存续。"
+        },
+        {
+          "name": "司法/执行风险",
+          "level": "中风险",
+          "hit": true,
+          "summary": "存在历史被执行记录，需销售进一步确认是否已结案。"
+        },
+        {
+          "name": "行政处罚风险",
+          "level": "中风险",
+          "hit": true,
+          "summary": "命中行政处罚记录，处罚金额不高。"
+        },
+        {
+          "name": "经营异常风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中经营异常。"
+        },
+        {
+          "name": "税务/信用风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显税务信用风险。"
+        },
+        {
+          "name": "股权/抵押/清算风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现重大冻结、抵押或清算风险。"
+        }
+      ],
+      "suggestion": "建议销售进一步确认"
+    }
+  },
+  {
+    "id": "risk-003",
+    "companyName": "重庆两江新区开发投资集团有限公司",
+    "tenderTitle": "两江新区城市运行数据治理与智能感知平台建设项目",
+    "tenderPriority": "高",
+    "isExistingCustomer": false,
+    "scanStatus": "scanned",
+    "riskLevel": "低风险",
+    "riskScore": 22,
+    "riskTags": [
+      "登记状态正常",
+      "国资背景"
+    ],
+    "lastScanTime": "2026-05-21 09:26",
+    "detail": {
+      "basicInfo": {
+        "companyName": "重庆两江新区开发投资集团有限公司",
+        "creditCode": "91500000600000000X",
+        "legalRepresentative": "待确认",
+        "establishedDate": "2010-05-18",
+        "registeredCapital": "500,000 万元",
+        "registrationStatus": "存续",
+        "industry": "园区建设/城市运营",
+        "businessScopeSummary": "城市基础设施建设、产业投资、园区运营和数字化建设相关服务。"
+      },
+      "riskScore": 22,
+      "riskLevel": "低风险",
+      "riskTags": [
+        "工商状态正常",
+        "未见重大司法风险"
+      ],
+      "riskReasons": [
+        "登记状态正常，未命中重大负面风险，判定为低风险。"
+      ],
+      "riskItems": [
+        {
+          "name": "工商状态风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "登记状态存续。"
+        },
+        {
+          "name": "司法/执行风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显执行风险。"
+        },
+        {
+          "name": "行政处罚风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中重大行政处罚。"
+        },
+        {
+          "name": "经营异常风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中经营异常。"
+        },
+        {
+          "name": "税务/信用风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现低纳税信用风险。"
+        },
+        {
+          "name": "股权/抵押/清算风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现清算或破产风险。"
+        }
+      ],
+      "suggestion": "可正常跟进"
+    }
+  },
+  {
+    "id": "risk-004",
+    "companyName": "北京某智慧科技有限公司",
+    "tenderTitle": "智慧园区 AI 平台与数据资产治理采购项目",
+    "tenderPriority": "中",
+    "isExistingCustomer": false,
+    "scanStatus": "scanned",
+    "riskLevel": "高风险",
+    "riskScore": 76,
+    "riskTags": [
+      "经营异常",
+      "被执行人",
+      "股权冻结"
+    ],
+    "lastScanTime": "2026-05-21 09:28",
+    "detail": {
+      "basicInfo": {
+        "companyName": "北京某智慧科技有限公司",
+        "creditCode": "91110108MA00MOCK01",
+        "legalRepresentative": "张某",
+        "establishedDate": "2018-03-09",
+        "registeredCapital": "500 万元",
+        "registrationStatus": "存续",
+        "industry": "软件和信息技术服务",
+        "businessScopeSummary": "智慧园区、AI 平台、数据治理和系统集成服务。"
+      },
+      "riskScore": 76,
+      "riskLevel": "高风险",
+      "riskTags": [
+        "经营异常",
+        "被执行人",
+        "股权冻结"
+      ],
+      "riskReasons": [
+        "命中 3 项风险：被执行人记录、经营异常记录、股权冻结，因此判定为高风险。"
+      ],
+      "riskItems": [
+        {
+          "name": "工商状态风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "登记状态存续。"
+        },
+        {
+          "name": "司法/执行风险",
+          "level": "高风险",
+          "hit": true,
+          "summary": "命中被执行人记录，需谨慎评估合作风险。"
+        },
+        {
+          "name": "行政处罚风险",
+          "level": "中风险",
+          "hit": true,
+          "summary": "命中行政处罚记录。"
+        },
+        {
+          "name": "经营异常风险",
+          "level": "高风险",
+          "hit": true,
+          "summary": "存在经营异常记录。"
+        },
+        {
+          "name": "税务/信用风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显税务风险。"
+        },
+        {
+          "name": "股权/抵押/清算风险",
+          "level": "中风险",
+          "hit": true,
+          "summary": "命中股权冻结记录。"
+        }
+      ],
+      "suggestion": "建议暂缓跟进"
+    }
+  },
+  {
+    "id": "risk-005",
+    "companyName": "中国科学院",
+    "tenderTitle": "高性能模型训练设备采购项目招标公告",
+    "tenderPriority": "中",
+    "isExistingCustomer": true,
+    "scanStatus": "scanned",
+    "riskLevel": "中风险",
+    "riskScore": 34,
+    "riskTags": [
+      "主体复杂",
+      "需确认采购主体"
+    ],
+    "lastScanTime": "2026-05-21 09:30",
+    "detail": {
+      "basicInfo": {
+        "companyName": "中国科学院",
+        "creditCode": "12100000400004489J",
+        "legalRepresentative": "侯建国",
+        "establishedDate": "1949-11-01",
+        "registeredCapital": "待公开确认",
+        "registrationStatus": "正常",
+        "industry": "科研",
+        "businessScopeSummary": "自然科学、高技术、战略咨询和科研平台建设。"
+      },
+      "riskScore": 34,
+      "riskLevel": "中风险",
+      "riskTags": [
+        "采购主体需确认",
+        "法人体较复杂"
+      ],
+      "riskReasons": [
+        "未命中重大负面风险，但采购主体和下属单位关系复杂，因此判定为中风险。"
+      ],
+      "riskItems": [
+        {
+          "name": "工商状态风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "登记状态正常。"
+        },
+        {
+          "name": "司法/执行风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显执行风险。"
+        },
+        {
+          "name": "行政处罚风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中重大处罚。"
+        },
+        {
+          "name": "经营异常风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未命中经营异常。"
+        },
+        {
+          "name": "税务/信用风险",
+          "level": "低风险",
+          "hit": false,
+          "summary": "未发现明显税务风险。"
+        },
+        {
+          "name": "股权/抵押/清算风险",
+          "level": "中风险",
+          "hit": true,
+          "summary": "主体和下属单位边界需确认。"
+        }
+      ],
+      "suggestion": "建议销售进一步确认"
+    }
+  },
+  {
+    "id": "risk-006",
+    "companyName": "深圳市政务服务数据管理局",
+    "tenderTitle": "深圳市政务服务数据管理局数据治理与政务云能力提升项目",
+    "tenderPriority": "低",
+    "isExistingCustomer": false,
+    "scanStatus": "pending",
+    "riskLevel": "待扫描",
+    "riskScore": 0,
+    "riskTags": [],
+    "lastScanTime": "",
+    "detail": null
+  },
+  {
+    "id": "risk-007",
+    "companyName": "上海临港数字城市发展有限公司",
+    "tenderTitle": "临港新片区数字孪生底座和城市运行中心建设项目",
+    "tenderPriority": "低",
+    "isExistingCustomer": false,
+    "scanStatus": "pending",
+    "riskLevel": "待扫描",
+    "riskScore": 0,
+    "riskTags": [],
+    "lastScanTime": "",
+    "detail": null
+  },
+  {
+    "id": "risk-008",
+    "companyName": "待人工确认客户",
+    "tenderTitle": "国家市场监管总局相关认证结果公开检查工作项目",
+    "tenderPriority": "中",
+    "isExistingCustomer": false,
+    "scanStatus": "failed",
+    "riskLevel": "待扫描",
+    "riskScore": 0,
+    "riskTags": [
+      "扫描失败，请稍后重试"
+    ],
+    "lastScanTime": "2026-05-21 09:32",
+    "detail": null
+  }
+]

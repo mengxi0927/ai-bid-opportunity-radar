@@ -90,20 +90,6 @@ export default function TenderDetailPage() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="fancy-metric accent-card-blue">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Recommendation</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">蓝色表示机会强度与推进可能性</p>
-              </div>
-              <div className="fancy-metric accent-card-red">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Risk Exposure</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">红色强调需要先被核验的阻塞项</p>
-              </div>
-              <div className="fancy-metric">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Decision Mode</p>
-                <p className="mt-2 text-lg font-semibold text-slate-950">把情报阅读变成有结论的销售决策</p>
-              </div>
-            </div>
           </section>
 
           {!qwenConfigured && (
